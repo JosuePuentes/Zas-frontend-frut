@@ -22,7 +22,7 @@ export default function RegistroPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
-    const res = await register(email, password, nombre, rol);
+    const res = await register(email, password, nombre, telefono, rol);
     setLoading(false);
     if (res.ok) {
       if (rol === 'admin') {
