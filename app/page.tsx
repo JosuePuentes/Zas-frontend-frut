@@ -37,11 +37,11 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-superfruty-black relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-superfruty-yellow/15 via-transparent to-superfruty-black" />
+      <div className="absolute inset-0 bg-gradient-to-b from-superfruty-yellow/15 via-transparent to-superfruty-black pointer-events-none" />
       <FruitPattern />
       <NewsBar />
 
-      <header className="absolute top-12 right-0 p-6 z-10 flex items-center gap-3">
+      <header className="absolute top-12 right-0 p-6 z-20 flex items-center gap-3">
         {user?.rol === 'cliente' ? (
           <Link
             href="/cliente"
