@@ -13,6 +13,7 @@ export default function RegistroPage() {
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
   const [rol, setRol] = useState<'cliente' | 'admin'>('cliente');
+  const [usuario, setUsuario] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
@@ -22,13 +23,13 @@ export default function RegistroPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
-    const res = await register(email, password, nombre, telefono, rol);
+    const res = await register(email, password, nombre, telefono, rol, usuario);
     setLoading(false);
     if (res.ok) {
       if (rol === 'admin') {
         router.push('/admin/dashboard');
       } else {
-        router.push('/');
+        router.push('/cliente');
       }
     } else {
       setError(res.error || 'Error al registrarse');
@@ -111,9 +112,21 @@ export default function RegistroPage() {
                 <option value="admin">Administrador</option>
               </select>
               <p className="text-xs text-gray-500 mt-1">
-                {rol === 'cliente' ? 'Acceso como cliente de la tienda' : 'Acceso al área administrativa'}
+                {rol === 'cliente' ? 'Acceso como cliente de la tienda' : 'Acceso al área administrativa con usuario'}
               </p>
             </div>
+            {rol === 'admin' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Usuario (para iniciar sesión)</label>
+                <input
+                  type="text"
+                  value={usuario}
+                  onChange={(e) => setUsuario(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-frutal-kiwi focus:ring-2 focus:ring-frutal-kiwi/20 outline-none"
+                  placeholder="admin"
+                />
+              </div>
+            )}
             {error && (
               <p className="text-red-600 text-sm font-medium">{error}</p>
             )}

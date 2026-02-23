@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLayout } from '@/context/LayoutContext';
 import { useAuth } from '@/context/AuthContext';
 import { useNotifications } from '@/context/NotificationsContext';
+import { useSupport } from '@/context/SupportContext';
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -20,6 +21,8 @@ import {
   Menu,
   Users,
   LogOut,
+  Megaphone,
+  MessageCircle,
 } from 'lucide-react';
 
 const MODULOS: { href: string; label: string; icon: any; permission: string }[] = [
@@ -31,7 +34,9 @@ const MODULOS: { href: string; label: string; icon: any; permission: string }[] 
   { href: '/admin/produccion', label: 'Producción', icon: Package, permission: 'produccion' },
   { href: '/admin/planificacion', label: 'Planificación', icon: ClipboardList, permission: 'planificacion' },
   { href: '/admin/alertas', label: 'Alertas Caducidad', icon: AlertTriangle, permission: 'alertas' },
+  { href: '/admin/anuncios', label: 'Anuncios y Banners', icon: Megaphone, permission: 'anuncios' },
   { href: '/admin/usuarios', label: 'Usuarios y Clientes', icon: Users, permission: 'usuarios' },
+  { href: '/admin/soporte', label: 'Mensajes Soporte', icon: MessageCircle, permission: 'usuarios' },
 ];
 
 export default function Sidebar() {
@@ -42,6 +47,7 @@ export default function Sidebar() {
   const { sidebarCollapsed: collapsed, setSidebarCollapsed: setCollapsed } = useLayout();
   const { user, logout, hasPermission } = useAuth();
   const { unreadCount } = useNotifications();
+  const { unreadCount: supportUnread } = useSupport();
 
   useEffect(() => {
     setMobileOpen(false);
@@ -113,7 +119,8 @@ export default function Sidebar() {
             {filteredModulos.map((mod, i) => {
               const Icon = mod.icon;
               const isActive = pathname === mod.href || pathname.startsWith(mod.href + '/');
-              const showBadge = mod.permission === 'usuarios' && unreadCount > 0;
+              const showBadge = (mod.permission === 'usuarios' && unreadCount > 0) || (mod.href === '/admin/soporte' && supportUnread > 0);
+              const badgeCount = mod.href === '/admin/soporte' ? supportUnread : unreadCount;
               return (
                 <motion.div key={mod.href} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}>
                   <Link
@@ -128,7 +135,7 @@ export default function Sidebar() {
                       <Icon className="w-5 h-5 flex-shrink-0" />
                       {showBadge && (
                         <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-frutal-fresa text-white text-[10px] font-bold">
-                          {unreadCount > 99 ? '99+' : unreadCount}
+                          {badgeCount > 99 ? '99+' : badgeCount}
                         </span>
                       )}
                     </span>

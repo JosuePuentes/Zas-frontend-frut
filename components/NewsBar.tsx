@@ -1,14 +1,11 @@
 'use client';
 
 import { Megaphone } from 'lucide-react';
-import { NOTICIAS_DIARIA } from '@/lib/homeConfig';
+import { useHomeConfig } from '@/context/HomeConfigContext';
 
-interface NewsBarProps {
-  noticias?: string[];
-}
-
-export default function NewsBar({ noticias = NOTICIAS_DIARIA }: NewsBarProps) {
-  const items = [...noticias, ...noticias];
+export default function NewsBar() {
+  const { anuncios } = useHomeConfig();
+  const items = [...anuncios, ...anuncios];
 
   return (
     <div className="bg-frutal-mora text-white py-2 overflow-hidden border-b-2 border-frutal-uva/50">

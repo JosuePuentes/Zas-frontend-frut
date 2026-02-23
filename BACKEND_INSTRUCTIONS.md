@@ -1,30 +1,62 @@
 # Instrucciones para el Backend - Zas! Frut
 
-El frontend actualmente usa **localStorage** para usuarios, clientes y notificaciones. Para producción, necesitas implementar estos endpoints en tu backend.
+El frontend usa **localStorage** para usuarios, anuncios, banners y mensajes de soporte. Para producción, implementa estos endpoints en tu backend.
 
 ---
 
 ## 1. Modelo de Usuario/Cliente
 
 ```javascript
-// Ejemplo en MongoDB/Mongoose
 const userSchema = new Schema({
   email: { type: String, required: true, unique: true },
+  usuario: { type: String, sparse: true }, // Solo para admin - nombre de usuario para login
   password: { type: String, required: true }, // hash con bcrypt
   nombre: { type: String, required: true },
   telefono: { type: String, default: '' },
   rol: { type: String, enum: ['cliente', 'admin', 'super_admin'], required: true },
-  permisos: [{ type: String }], // para admin: ['dashboard', 'pos', 'inventario-materia-prima', ...]
+  permisos: [{ type: String }], // para admin
   createdAt: { type: Date, default: Date.now }
 });
 ```
 
+**Importante:** 
+- **Clientes** inician sesión con **correo (email)** + contraseña
+- **Administradores** inician sesión con **usuario** + contraseña
+- El campo `usuario` es obligatorio para admin/super_admin, opcional para cliente
+
 ---
 
-## 2. Endpoints de Autenticación
+## 2. Login diferenciado
+
+### POST /auth/login
+
+**Body (admin):**
+```json
+{
+  "identificador": "admin",
+  "password": "password123",
+  "tipo": "admin"
+}
+```
+
+**Body (cliente):**
+```json
+{
+  "identificador": "cliente@email.com",
+  "password": "password123",
+  "tipo": "cliente"
+}
+```
+
+- Si `tipo: "admin"` → buscar por `usuario` (o email como fallback)
+- Si `tipo: "cliente"` → buscar por `email`
+- Response: `{ user: {...}, token: "jwt..." }`
+
+---
+
+## 3. Registro
 
 ### POST /auth/register
-Registro de clientes y administradores.
 
 **Body:**
 ```json
@@ -33,157 +65,141 @@ Registro de clientes y administradores.
   "password": "password123",
   "nombre": "Juan Pérez",
   "telefono": "+58 412 1234567",
-  "rol": "cliente"  // o "admin"
+  "rol": "cliente",
+  "usuario": "admin"  // Solo si rol es "admin"
 }
 ```
 
-**Response:** `{ "user": {...}, "token": "jwt..." }` o `{ "ok": true }`
-
-**Al registrar un cliente:** Emitir evento/crear notificación para que los admins la vean.
-
----
-
-### POST /auth/login
-Inicio de sesión (solo admin/super_admin).
-
-**Body:**
-```json
-{
-  "email": "admin@zas.com",
-  "password": "password123"
-}
-```
-
-**Response:**
-```json
-{
-  "user": { "id", "email", "nombre", "rol", "permisos" },
-  "token": "jwt..."
-}
-```
+- Si `rol: "cliente"` → redirigir a `/cliente`
+- Si `rol: "admin"` → crear con `usuario`, redirigir a `/admin/dashboard`
 
 ---
 
-### POST /auth/logout (opcional)
-Invalidar token.
+## 4. Anuncios y Banners del Home
 
----
+### Modelos
 
-## 3. Endpoints de Usuarios (protegidos, solo admin)
-
-### GET /users
-Listar todos los usuarios (clientes y admins).
-
-**Headers:** `Authorization: Bearer <token>`
-
-**Response:** `[{ id, email, nombre, telefono, rol, permisos, createdAt }]`
-
----
-
-### POST /users
-Crear usuario o cliente (desde el módulo admin).
-
-**Body:**
-```json
-{
-  "email": "nuevo@ejemplo.com",
-  "password": "password123",
-  "nombre": "María García",
-  "telefono": "+58 414 9876543",
-  "rol": "cliente",  // o "admin" o "super_admin"
-  "permisos": ["dashboard", "pos", "usuarios"]  // solo si rol es admin
-}
-```
-
-### GET /users/:id
-Obtener un usuario por ID.
-
----
-
-## 4. Notificaciones
-
-### Modelo de Notificación
 ```javascript
-const notificationSchema = new Schema({
-  tipo: { type: String }, // 'nuevo_cliente', etc.
-  mensaje: { type: String },
-  adminId: { type: ObjectId }, // a quién le llega (opcional)
-  leida: { type: Boolean, default: false },
-  data: { type: Schema.Types.Mixed },
+const anuncioSchema = new Schema({
+  texto: { type: String, required: true },
+  orden: { type: Number, default: 0 },
+  activo: { type: Boolean, default: true },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const bannerSchema = new Schema({
+  imagen: { type: String, required: true },
+  titulo: { type: String },
+  subtitulo: { type: String },
+  enlace: { type: String },
+  orden: { type: Number, default: 0 },
+  activo: { type: Boolean, default: true },
   createdAt: { type: Date, default: Date.now }
 });
 ```
 
-### GET /notifications
-Obtener notificaciones del admin logueado.
-
-**Headers:** `Authorization: Bearer <token>`
-
-**Query:** `?leidas=false` (opcional, para filtrar no leídas)
-
-**Response:** `[{ id, tipo, mensaje, leida, data, createdAt }]`
-
----
-
-### PATCH /notifications/:id/read
-Marcar notificación como leída.
-
----
-
-### PATCH /notifications/read-all
-Marcar todas como leídas.
-
----
-
-### Lógica al registrar cliente
-Cuando se llame `POST /auth/register` con `rol: "cliente"`:
-
-1. Crear el usuario en la base de datos
-2. Crear una notificación: `{ tipo: 'nuevo_cliente', mensaje: 'Nuevo cliente registrado: Juan Pérez', data: { userId, nombre, email } }`
-3. Opcional: usar WebSockets o Server-Sent Events para enviar la notificación en tiempo real a los admins conectados
-
----
-
-## 5. Integración en el Frontend
-
-### Variables de entorno
-```
-NEXT_PUBLIC_API_URL=https://zas-backend-frut.onrender.com
-```
-
-### Cambios necesarios en el frontend
-1. Reemplazar las llamadas a localStorage en `AuthContext` por `fetch` a los endpoints arriba
-2. Reemplazar `NotificationsContext` para que consuma `GET /notifications` y `PATCH /notifications/:id/read`
-3. En `register()` y `createUser()`: enviar `telefono` en el body
-4. Guardar el token JWT en localStorage o cookie y enviarlo en el header `Authorization` en todas las peticiones al backend
-
----
-
-## 6. Resumen de endpoints nuevos
+### Endpoints
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
-| POST | /auth/register | Registro |
-| POST | /auth/login | Login |
-| GET | /users | Listar usuarios |
-| POST | /users | Crear usuario |
-| GET | /notifications | Listar notificaciones |
-| PATCH | /notifications/:id/read | Marcar leída |
-| PATCH | /notifications/read-all | Marcar todas leídas |
+| GET | /home/anuncios | Listar anuncios (público) |
+| GET | /home/banners | Listar banners (público) |
+| GET | /home/paneles | Listar paneles publicidad (público) |
+| POST | /admin/anuncios | Crear anuncio (protegido) |
+| PUT | /admin/anuncios/:id | Actualizar anuncio |
+| DELETE | /admin/anuncios/:id | Eliminar anuncio |
+| POST | /admin/banners | Crear banner |
+| PUT | /admin/banners/:id | Actualizar banner |
+| DELETE | /admin/banners/:id | Eliminar banner |
+| POST | /admin/paneles | Crear panel |
+| PUT | /admin/paneles/:id | Actualizar panel |
+| DELETE | /admin/paneles/:id | Eliminar panel |
 
 ---
 
-## 7. Permisos por módulo
+## 5. Mensajes de Soporte
 
-Los módulos que pueden asignarse a un admin son:
-- `dashboard`
-- `pos`
-- `inventario-materia-prima`
-- `inventario-preparacion`
-- `inventario-venta`
-- `produccion`
-- `planificacion`
-- `alertas`
-- `usuarios`
+### Modelo
 
-En el backend, validar que el usuario tenga el permiso correspondiente antes de permitir acceso a cada módulo/funcionalidad.
+```javascript
+const supportMessageSchema = new Schema({
+  clienteId: { type: ObjectId, ref: 'User', required: true },
+  clienteNombre: { type: String, required: true },
+  clienteEmail: { type: String, required: true },
+  mensaje: { type: String, required: true },
+  leido: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now }
+});
+```
+
+### Endpoints
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| POST | /soporte | Cliente envía mensaje (requiere token de cliente) |
+| GET | /admin/soporte | Listar mensajes (protegido, solo admin) |
+| PATCH | /admin/soporte/:id/read | Marcar como leído |
+
+---
+
+## 6. Compras del Cliente
+
+Para "Mis compras" en el área cliente, asociar cada venta con el `clienteId` cuando el cliente esté logueado.
+
+### Modificar POST /sales
+
+**Body actual:**
+```json
+{
+  "items": [...],
+  "clienteId": "id_del_cliente"  // Añadir cuando el cliente hace un pedido
+}
+```
+
+### GET /cliente/compras
+
+Listar ventas donde `clienteId` coincide con el usuario logueado.
+
+**Headers:** `Authorization: Bearer <token>` (token de cliente)
+
+**Response:** `[{ id, fecha, total, items: [...] }]`
+
+---
+
+## 7. Resumen de endpoints
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| POST | /auth/register | Registro (incluir usuario si rol admin) |
+| POST | /auth/login | Login (tipo: admin o cliente) |
+| GET | /users | Listar usuarios |
+| POST | /users | Crear usuario |
+| GET | /notifications | Notificaciones admin |
+| PATCH | /notifications/:id/read | Marcar leída |
+| GET | /home/anuncios | Anuncios barra superior |
+| GET | /home/banners | Banners carrusel |
+| GET | /home/paneles | Paneles publicidad |
+| POST | /admin/anuncios | Crear anuncio |
+| POST | /admin/banners | Crear banner |
+| POST | /admin/paneles | Crear panel |
+| POST | /soporte | Mensaje de soporte (cliente) |
+| GET | /admin/soporte | Mensajes soporte |
+| PATCH | /admin/soporte/:id/read | Marcar leído |
+| GET | /cliente/compras | Compras del cliente |
+
+---
+
+## 8. Permisos por módulo
+
+- `dashboard`, `pos`, `inventario-materia-prima`, `inventario-preparacion`, `inventario-venta`
+- `produccion`, `planificacion`, `alertas`, `usuarios`, `anuncios`
+
+---
+
+## 9. Integración Frontend
+
+1. Reemplazar `AuthContext` login: llamar `POST /auth/login` con `identificador`, `password`, `tipo`
+2. Reemplazar `HomeConfigContext` por fetch a `/home/anuncios`, `/home/banners`, `/home/paneles`
+3. Reemplazar `SupportContext` por `POST /soporte` y `GET /admin/soporte`
+4. En ventas POS: si hay cliente logueado, enviar `clienteId` en el body
+5. Área cliente: consumir `GET /cliente/compras` para "Mis compras"

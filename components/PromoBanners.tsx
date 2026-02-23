@@ -5,27 +5,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import type { PromoBanner } from '@/lib/homeConfig';
+import { useHomeConfig } from '@/context/HomeConfigContext';
 
-interface PromoBannersProps {
-  banners?: PromoBanner[];
-}
-
-export default function PromoBanners({ banners: propBanners }: PromoBannersProps) {
+export default function PromoBanners() {
+  const { banners } = useHomeConfig();
   const [current, setCurrent] = useState(0);
-  const [banners, setBanners] = useState<PromoBanner[]>([]);
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const { BANNERS_PROMO } = await import('@/lib/homeConfig');
-        setBanners(propBanners?.length ? propBanners : BANNERS_PROMO);
-      } catch {
-        setBanners(propBanners || []);
-      }
-    }
-    load();
-  }, [propBanners]);
 
   useEffect(() => {
     if (banners.length <= 1) return;

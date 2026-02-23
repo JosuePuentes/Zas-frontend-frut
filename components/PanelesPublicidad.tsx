@@ -1,28 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import type { PromoBanner } from '@/lib/homeConfig';
+import { useHomeConfig } from '@/context/HomeConfigContext';
 
-interface PanelesPublicidadProps {
-  paneles?: PromoBanner[];
-}
-
-export default function PanelesPublicidad({ paneles: propPaneles }: PanelesPublicidadProps) {
-  const [paneles, setPaneles] = useState<PromoBanner[]>([]);
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const { PANELES_PUBLICIDAD } = await import('@/lib/homeConfig');
-        setPaneles(propPaneles?.length ? propPaneles : PANELES_PUBLICIDAD);
-      } catch {
-        setPaneles(propPaneles || []);
-      }
-    }
-    load();
-  }, [propPaneles]);
+export default function PanelesPublicidad() {
+  const { paneles } = useHomeConfig();
 
   if (paneles.length === 0) return null;
 

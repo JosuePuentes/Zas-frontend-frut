@@ -2,24 +2,37 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { LogIn, UserPlus } from 'lucide-react';
+import { LogIn, UserPlus, User } from 'lucide-react';
 import NewsBar from '@/components/NewsBar';
 import PromoBanners from '@/components/PromoBanners';
 import PanelesPublicidad from '@/components/PanelesPublicidad';
+import { useAuth } from '@/context/AuthContext';
 
 export default function HomePage() {
+  const { user } = useAuth();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-frutal-fresa via-frutal-mora to-frutal-uva">
       <NewsBar />
 
-      <header className="absolute top-12 right-0 p-6 z-10">
-        <Link
-          href="/login"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-frutal-mora font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all"
-        >
-          <LogIn className="w-5 h-5" />
-          Iniciar sesión
-        </Link>
+      <header className="absolute top-12 right-0 p-6 z-10 flex items-center gap-3">
+        {user?.rol === 'cliente' ? (
+          <Link
+            href="/cliente"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-frutal-kiwi font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all"
+          >
+            <User className="w-5 h-5" />
+            Mi área
+          </Link>
+        ) : (
+          <Link
+            href="/login"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-frutal-mora font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all"
+          >
+            <LogIn className="w-5 h-5" />
+            Iniciar sesión
+          </Link>
+        )}
       </header>
 
       <main className="min-h-screen flex flex-col items-center px-6 pt-24 pb-16">

@@ -16,6 +16,7 @@ const MODULE_LABELS: Record<ModulePermission, string> = {
   planificacion: 'Planificación',
   alertas: 'Alertas',
   usuarios: 'Usuarios',
+  anuncios: 'Anuncios y Banners',
 };
 
 const ROL_LABELS: Record<UserRole, string> = {
@@ -35,6 +36,7 @@ export default function UsuariosPage() {
   const [telefono, setTelefono] = useState('');
   const [rol, setRol] = useState<UserRole>('admin');
   const [permisos, setPermisos] = useState<ModulePermission[]>(['dashboard', 'pos']);
+  const [usuario, setUsuario] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -55,7 +57,7 @@ export default function UsuariosPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
-    const res = await createUser(email, password, nombre, telefono, rol, permisos);
+    const res = await createUser(email, password, nombre, telefono, rol, permisos, usuario);
     setLoading(false);
     if (res.ok) {
       setShowModal(false);
@@ -64,6 +66,7 @@ export default function UsuariosPage() {
       setPassword('');
       setTelefono('');
       setRol('admin');
+      setUsuario('');
       setPermisos(['dashboard', 'pos']);
       loadUsers();
     } else {
@@ -251,6 +254,18 @@ export default function UsuariosPage() {
                   <option value="super_admin">Super Admin</option>
                 </select>
               </div>
+              {rol !== 'cliente' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
+                  <input
+                    type="text"
+                    value={usuario}
+                    onChange={(e) => setUsuario(e.target.value)}
+                    className="w-full px-4 py-2 rounded-xl border-2 border-gray-200 focus:border-frutal-mora outline-none"
+                    placeholder="admin"
+                  />
+                </div>
+              )}
               {rol !== 'cliente' && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Permisos (módulos)</label>

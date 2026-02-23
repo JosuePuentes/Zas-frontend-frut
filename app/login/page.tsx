@@ -5,19 +5,24 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
-import { LogIn, ArrowLeft } from 'lucide-react';
+import { LogIn, ArrowLeft, User, Mail } from 'lucide-react';
 
 export default function LoginPage() {
   const { user, ready, login } = useAuth();
   const router = useRouter();
-  const [email, setEmail] = useState('');
+  const [tipo, setTipo] = useState<'admin' | 'cliente'>('admin');
+  const [identificador, setIdentificador] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (ready && user) {
-      router.replace('/admin/dashboard');
+      if (user.rol === 'cliente') {
+        router.replace('/cliente');
+      } else {
+        router.replace('/admin/dashboard');
+      }
     }
   }, [ready, user, router]);
 
@@ -25,10 +30,14 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
-    const res = await login(email, password);
+    const res = await login(identificador, password, tipo);
     setLoading(false);
     if (res.ok) {
-      router.push('/admin/dashboard');
+      if (tipo === 'cliente') {
+        router.push('/cliente');
+      } else {
+        router.push('/admin/dashboard');
+      }
     } else {
       setError(res.error || 'Error al iniciar sesión');
     }
@@ -55,16 +64,39 @@ export default function LoginPage() {
             <h1 className="text-2xl font-bold text-gray-800">Iniciar sesión</h1>
           </div>
 
+          <div className="flex gap-2 mb-4">
+            <button
+              type="button"
+              onClick={() => setTipo('admin')}
+              className={`flex-1 py-2 rounded-xl font-medium flex items-center justify-center gap-2 ${
+                tipo === 'admin' ? 'bg-frutal-mora text-white' : 'bg-gray-100 text-gray-600'
+              }`}
+            >
+              <User className="w-4 h-4" /> Administrador
+            </button>
+            <button
+              type="button"
+              onClick={() => setTipo('cliente')}
+              className={`flex-1 py-2 rounded-xl font-medium flex items-center justify-center gap-2 ${
+                tipo === 'cliente' ? 'bg-frutal-kiwi text-white' : 'bg-gray-100 text-gray-600'
+              }`}
+            >
+              <Mail className="w-4 h-4" /> Cliente
+            </button>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {tipo === 'admin' ? 'Usuario' : 'Correo electrónico'}
+              </label>
               <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type={tipo === 'admin' ? 'text' : 'email'}
+                value={identificador}
+                onChange={(e) => setIdentificador(e.target.value)}
                 required
                 className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-frutal-mora focus:ring-2 focus:ring-frutal-mora/20 outline-none"
-                placeholder="admin@zas.com (cualquier contraseña)"
+                placeholder={tipo === 'admin' ? 'admin' : 'tu@correo.com'}
               />
             </div>
             <div>
