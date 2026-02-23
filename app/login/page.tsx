@@ -8,20 +8,18 @@ import { useAuth } from '@/context/AuthContext';
 import { LogIn, ArrowLeft } from 'lucide-react';
 
 export default function LoginPage() {
-  const { user, ready } = useAuth();
+  const { user, ready, login } = useAuth();
   const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (ready && user) {
       router.replace('/admin/dashboard');
     }
   }, [ready, user, router]);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
