@@ -126,8 +126,11 @@ Los administradores crean tanto **clientes** como **usuarios administrativos** d
 
 ## 4. Anuncios y Banners del Home
 
+Barra de noticias, banners del carrusel y paneles de promociones. Cada cambio requiere **Guardar** para persistir.
+
 ### Modelos
 
+**Anuncios diarios** (barra de noticias que rotan):
 ```javascript
 const anuncioSchema = new Schema({
   texto: { type: String, required: true },
@@ -135,7 +138,10 @@ const anuncioSchema = new Schema({
   activo: { type: Boolean, default: true },
   createdAt: { type: Date, default: Date.now }
 });
+```
 
+**Banners** (carrusel principal del home):
+```javascript
 const bannerSchema = new Schema({
   imagen: { type: String, required: true },
   titulo: { type: String },
@@ -147,22 +153,39 @@ const bannerSchema = new Schema({
 });
 ```
 
+**Paneles publicidad** (grid de promociones):
+```javascript
+const panelSchema = new Schema({
+  imagen: { type: String, required: true },
+  titulo: { type: String },
+  subtitulo: { type: String },
+  orden: { type: Number, default: 0 },
+  activo: { type: Boolean, default: true },
+  createdAt: { type: Date, default: Date.now }
+});
+```
+
 ### Endpoints
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
-| GET | /home/anuncios | Listar anuncios (público) |
+| GET | /home/anuncios | Listar anuncios (público). Response: `["texto1", "texto2", ...]` o `[{ id, texto }, ...]` |
 | GET | /home/banners | Listar banners (público) |
-| GET | /home/paneles | Listar paneles publicidad (público) |
-| POST | /admin/anuncios | Crear anuncio (protegido) |
-| PUT | /admin/anuncios/:id | Actualizar anuncio |
+| GET | /home/paneles | Listar paneles (público) |
+| POST | /admin/anuncios | Crear anuncio. Body: `{ texto: "..." }` |
+| PUT | /admin/anuncios/:id | Actualizar anuncio. Body: `{ texto: "..." }` |
 | DELETE | /admin/anuncios/:id | Eliminar anuncio |
-| POST | /admin/banners | Crear banner |
-| PUT | /admin/banners/:id | Actualizar banner |
+| POST | /admin/banners | Crear banner. Body: `{ imagen, titulo, subtitulo?, enlace? }` |
+| PUT | /admin/banners/:id | Actualizar banner. Body: `{ imagen?, titulo?, subtitulo?, enlace? }` |
 | DELETE | /admin/banners/:id | Eliminar banner |
-| POST | /admin/paneles | Crear panel |
-| PUT | /admin/paneles/:id | Actualizar panel |
+| POST | /admin/paneles | Crear panel. Body: `{ imagen, titulo, subtitulo? }` |
+| PUT | /admin/paneles/:id | Actualizar panel. Body: `{ imagen?, titulo?, subtitulo? }` |
 | DELETE | /admin/paneles/:id | Eliminar panel |
+
+### Flujo en el frontend
+
+- El admin edita en los inputs y hace clic en **Guardar** por cada item para persistir
+- Al integrar con backend: el botón Guardar debe llamar `PUT /admin/anuncios/:id`, `PUT /admin/banners/:id` o `PUT /admin/paneles/:id` según corresponda
 
 ---
 
