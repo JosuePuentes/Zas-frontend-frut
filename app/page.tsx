@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { LogIn, UserPlus, User, Users, Mail, Sparkles, X } from 'lucide-react';
 import NewsBar from '@/components/NewsBar';
@@ -9,20 +10,42 @@ import PromoBanners from '@/components/PromoBanners';
 import PanelesPublicidad from '@/components/PanelesPublicidad';
 import { useAuth } from '@/context/AuthContext';
 
+function FruitPattern() {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.08]">
+      <svg className="absolute w-full h-full" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="fruit-pattern" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse">
+            <circle cx="30" cy="40" r="12" fill="white" />
+            <ellipse cx="80" cy="25" rx="15" ry="18" fill="white" />
+            <path d="M120 60 Q140 50 160 60 Q150 75 120 75 Z" fill="white" />
+            <circle cx="50" cy="120" r="10" fill="white" />
+            <ellipse cx="150" cy="100" rx="12" ry="14" fill="white" />
+            <path d="M20 150 Q35 140 50 150 Q40 165 20 165 Z" fill="white" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#fruit-pattern)" />
+      </svg>
+    </div>
+  );
+}
+
 export default function HomePage() {
   const { user } = useAuth();
   const [modalQuienes, setModalQuienes] = useState(false);
   const [modalContacto, setModalContacto] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-frutal-fresa via-frutal-mora to-frutal-uva">
+    <div className="min-h-screen bg-superfruty-black relative">
+      <div className="absolute inset-0 bg-gradient-to-b from-superfruty-yellow/15 via-transparent to-superfruty-black" />
+      <FruitPattern />
       <NewsBar />
 
       <header className="absolute top-12 right-0 p-6 z-10 flex items-center gap-3">
         {user?.rol === 'cliente' ? (
           <Link
             href="/cliente"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-frutal-kiwi font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-superfruty-yellow text-superfruty-black font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all"
           >
             <User className="w-5 h-5" />
             Mi área
@@ -30,7 +53,7 @@ export default function HomePage() {
         ) : (
           <Link
             href="/login"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-frutal-mora font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-superfruty-yellow text-superfruty-black font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all"
           >
             <LogIn className="w-5 h-5" />
             Iniciar sesión
@@ -38,17 +61,24 @@ export default function HomePage() {
         )}
       </header>
 
-      <main className="min-h-screen flex flex-col items-center px-6 pt-24 pb-16">
+      <main className="min-h-screen flex flex-col items-center px-6 pt-24 pb-16 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-8"
+          className="text-center mb-8 flex flex-col items-center"
         >
-          <h1 className="text-5xl md:text-7xl font-black text-white drop-shadow-lg">
-            Zas! Frut
-          </h1>
-          <p className="text-xl md:text-2xl text-white/95 mt-4 font-medium">
+          <div className="relative w-40 h-40 md:w-52 md:h-52 mb-4">
+            <Image
+              src="/logo-super-fruty.png"
+              alt="Super Fruty"
+              fill
+              className="object-contain drop-shadow-2xl"
+              priority
+              sizes="(max-width: 768px) 160px, 208px"
+            />
+          </div>
+          <p className="text-xl md:text-2xl text-superfruty-yellow mt-2 font-medium">
             Batidos frescos, naturales y deliciosos
           </p>
           <p className="text-white/80 mt-2">
@@ -71,7 +101,7 @@ export default function HomePage() {
           transition={{ delay: 0.4 }}
           className="w-full mb-12"
         >
-          <h2 className="text-2xl font-bold text-white text-center mb-6 drop-shadow-md">
+          <h2 className="text-2xl font-bold text-superfruty-yellow text-center mb-6">
             Promociones
           </h2>
           <PanelesPublicidad />
@@ -85,21 +115,21 @@ export default function HomePage() {
         >
           <button
             onClick={() => setModalQuienes(true)}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/90 text-frutal-mora font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-superfruty-yellow text-superfruty-black font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all"
           >
             <Users className="w-5 h-5" />
             Quiénes somos
           </button>
           <button
             onClick={() => setModalContacto(true)}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/90 text-frutal-kiwi font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-superfruty-yellow text-superfruty-black font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all"
           >
             <Mail className="w-5 h-5" />
             Contacto
           </button>
           <Link
             href="/registro"
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-white text-frutal-fresa font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all"
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-superfruty-yellow text-superfruty-black font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all"
           >
             <UserPlus className="w-6 h-6" />
             Registrarse
@@ -110,24 +140,24 @@ export default function HomePage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="w-full max-w-4xl mt-8 p-6 rounded-2xl bg-white/20 backdrop-blur-sm border border-white/30"
+          className="w-full max-w-4xl mt-8 p-6 rounded-2xl bg-white/10 backdrop-blur-sm border border-superfruty-yellow/30"
         >
-          <h2 className="text-xl font-bold text-white text-center mb-4 flex items-center justify-center gap-2">
+          <h2 className="text-xl font-bold text-superfruty-yellow text-center mb-4 flex items-center justify-center gap-2">
             <Sparkles className="w-6 h-6" />
             ¿Por qué elegirnos?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-white/95 text-center">
-            <div className="p-4 rounded-xl bg-white/10">
-              <p className="font-bold">Frescura garantizada</p>
-              <p className="text-sm mt-1">Ingredientes naturales y de primera calidad</p>
+            <div className="p-4 rounded-xl bg-superfruty-yellow/10 border border-superfruty-yellow/20">
+              <p className="font-bold text-white">Frescura garantizada</p>
+              <p className="text-sm mt-1 text-white/80">Ingredientes naturales y de primera calidad</p>
             </div>
-            <div className="p-4 rounded-xl bg-white/10">
-              <p className="font-bold">Entrega a domicilio</p>
-              <p className="text-sm mt-1">Llevamos tus batidos hasta tu puerta en Zulia</p>
+            <div className="p-4 rounded-xl bg-superfruty-yellow/10 border border-superfruty-yellow/20">
+              <p className="font-bold text-white">Entrega a domicilio</p>
+              <p className="text-sm mt-1 text-white/80">Llevamos tus batidos hasta tu puerta en Zulia</p>
             </div>
-            <div className="p-4 rounded-xl bg-white/10">
-              <p className="font-bold">Variedad de sabores</p>
-              <p className="text-sm mt-1">Múltiples combinaciones para todos los gustos</p>
+            <div className="p-4 rounded-xl bg-superfruty-yellow/10 border border-superfruty-yellow/20">
+              <p className="font-bold text-white">Variedad de sabores</p>
+              <p className="text-sm mt-1 text-white/80">Múltiples combinaciones para todos los gustos</p>
             </div>
           </div>
         </motion.section>
@@ -150,9 +180,9 @@ export default function HomePage() {
             <button onClick={() => setModalQuienes(false)} className="absolute top-4 right-4 p-1 rounded-lg hover:bg-gray-100">
               <X className="w-5 h-5 text-gray-600" />
             </button>
-            <h3 className="text-2xl font-bold text-frutal-mora mb-4">Quiénes somos</h3>
+            <h3 className="text-2xl font-bold text-superfruty-black mb-4">Quiénes somos</h3>
             <p className="text-gray-700 leading-relaxed">
-              <strong>Zas! Frut</strong> es tu tienda de batidos de frutas frescas en el estado Zulia, Venezuela.
+              <strong>Super Fruty</strong> es tu tienda de batidos de frutas frescas en el estado Zulia, Venezuela.
               Nos dedicamos a preparar batidos naturales con ingredientes de calidad, sin conservantes artificiales.
               Nuestra misión es llevar la frescura de las frutas a tu mesa, ya sea que nos visites o te llevemos
               el pedido hasta tu hogar con nuestro servicio de delivery.
@@ -181,14 +211,14 @@ export default function HomePage() {
             <button onClick={() => setModalContacto(false)} className="absolute top-4 right-4 p-1 rounded-lg hover:bg-gray-100">
               <X className="w-5 h-5 text-gray-600" />
             </button>
-            <h3 className="text-2xl font-bold text-frutal-kiwi mb-4">Contacto</h3>
+            <h3 className="text-2xl font-bold text-superfruty-black mb-4">Contacto</h3>
             <div className="space-y-3 text-gray-700">
               <p className="flex items-center gap-2">
-                <Mail className="w-5 h-5 text-frutal-mora" />
-                <span>Email: contacto@zasfrut.com</span>
+                <Mail className="w-5 h-5 text-superfruty-yellow" />
+                <span>Email: contacto@superfruty.com</span>
               </p>
               <p className="flex items-center gap-2">
-                <span className="text-frutal-mora font-bold">Tel:</span>
+                <span className="text-superfruty-yellow font-bold">Tel:</span>
                 <span>+58 412 123 4567</span>
               </p>
               <p className="text-sm text-gray-600 mt-4">

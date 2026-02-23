@@ -9,16 +9,24 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        superfruty: {
+          yellow: '#F5D000',
+          yellowDark: '#E5C000',
+          black: '#0a0a0a',
+          blackLight: '#1a1a1a',
+          gray: '#6b7280',
+          white: '#ffffff',
+        },
         frutal: {
-          mango: '#E89500',
+          mango: '#F5D000',
           fresa: '#E53935',
-          mora: '#7B1FA2',
-          kiwi: '#558B2F',
-          banana: '#F9A825',
+          mora: '#1a1a1a',
+          kiwi: '#76B93F',
+          banana: '#F5D000',
           naranja: '#E65100',
-          uva: '#4A148C',
+          uva: '#1a1a1a',
           sandia: '#E91E63',
-          limon: '#8BC34A',
+          limon: '#76B93F',
           coco: '#5D4037',
         },
       },

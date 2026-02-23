@@ -1,4 +1,4 @@
-# Zas! Frut - Frontend
+# Super Fruty - Frontend
 
 Frontend Next.js para tienda de batidos. Conectado al backend en `https://zas-backend-frut.onrender.com`.
 

@@ -35,7 +35,7 @@ export default function MapaSucursales() {
   }
 
   return (
-    <div className="rounded-2xl overflow-hidden border-2 border-frutal-mango/30 h-[400px]">
+    <div className="rounded-2xl overflow-hidden border-2 border-superfruty-yellow/30 h-[400px]">
       <MapContainer
         center={activas.length > 0 ? [activas[0].lat, activas[0].lng] : ZULIA_CENTER}
         zoom={activas.length > 1 ? 11 : 13}
@@ -50,7 +50,7 @@ export default function MapaSucursales() {
           <Marker key={s.id} position={[s.lat, s.lng]} icon={storeIcon}>
             <Popup>
               <div className="p-2 min-w-[180px]">
-                <p className="font-bold text-frutal-mora">{s.nombre}</p>
+                <p className="font-bold text-superfruty-black">{s.nombre}</p>
                 <p className="text-sm text-gray-600">{s.direccion}</p>
                 {s.telefono && (
                   <p className="text-sm text-gray-600 mt-1">Tel: {s.telefono}</p>

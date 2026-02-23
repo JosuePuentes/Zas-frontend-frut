@@ -36,11 +36,12 @@ export default function ClienteLayout({
   if (user.rol !== 'cliente') return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-frutal-kiwi/20 via-white to-frutal-mango/20">
-      <header className="bg-white shadow-md border-b-2 border-frutal-mango/20">
+    <div className="min-h-screen bg-gradient-to-br from-superfruty-yellow/10 via-white to-superfruty-black/5">
+      <header className="bg-white shadow-md border-b-2 border-superfruty-yellow">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/cliente" className="text-xl font-bold text-frutal-mora">
-            Zas! Frut
+          <Link href="/cliente" className="flex items-center gap-2">
+            <Image src="/logo-super-fruty.png" alt="Super Fruty" width={40} height={40} className="object-contain" />
+            <span className="text-xl font-bold text-superfruty-black">Super Fruty</span>
           </Link>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600 hidden sm:inline">{user.nombre}</span>
@@ -58,24 +59,24 @@ export default function ClienteLayout({
         {children}
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-frutal-mango/20 flex justify-around py-2 z-40">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-superfruty-yellow flex justify-around py-2 z-40">
         <Link
           href="/cliente"
-          className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl ${pathname === '/cliente' ? 'bg-frutal-kiwi/20 text-frutal-kiwi' : 'text-gray-600'}`}
+          className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl ${pathname === '/cliente' ? 'bg-superfruty-yellow/20 text-superfruty-black' : 'text-gray-600'}`}
         >
           <Coffee className="w-6 h-6" />
           <span className="text-xs font-medium">Catálogo</span>
         </Link>
         <Link
           href="/cliente/pedidos"
-          className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl ${pathname === '/cliente/pedidos' ? 'bg-frutal-kiwi/20 text-frutal-kiwi' : 'text-gray-600'}`}
+          className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl ${pathname === '/cliente/pedidos' ? 'bg-superfruty-yellow/20 text-superfruty-black' : 'text-gray-600'}`}
         >
           <ShoppingBag className="w-6 h-6" />
           <span className="text-xs font-medium">Mis pedidos</span>
         </Link>
         <Link
           href="/cliente/sucursales"
-          className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl ${pathname === '/cliente/sucursales' ? 'bg-frutal-kiwi/20 text-frutal-kiwi' : 'text-gray-600'}`}
+          className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl ${pathname === '/cliente/sucursales' ? 'bg-superfruty-yellow/20 text-superfruty-black' : 'text-gray-600'}`}
         >
           <MapPin className="w-6 h-6" />
           <span className="text-xs font-medium">Sucursales</span>

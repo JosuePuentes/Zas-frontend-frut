@@ -5,7 +5,7 @@
 
 /** Noticias/notificaciones para la barra superior (editar en NewsBar o pasar como prop) */
 export const NOTICIAS_DIARIA = [
-  '¡Bienvenidos a Zas! Frut! Batidos frescos todos los días.',
+  '¡Bienvenidos a Super Fruty! Batidos frescos todos los días.',
   '🎉 2x1 en batidos de mango los martes',
   'Nuevos sabores: Maracuyá, Guanábana y Piña Colada',
   'Horario: Lunes a Sábado 8am - 8pm',

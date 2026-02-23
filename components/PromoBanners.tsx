@@ -20,7 +20,7 @@ export default function PromoBanners() {
   if (banners.length === 0) return null;
 
   return (
-    <div className="relative w-full max-w-5xl mx-auto rounded-2xl overflow-hidden shadow-2xl border-4 border-white/30">
+    <div className="relative w-full max-w-5xl mx-auto rounded-2xl overflow-hidden shadow-2xl border-4 border-superfruty-yellow/50">
       <AnimatePresence mode="wait">
         <motion.div
           key={current}

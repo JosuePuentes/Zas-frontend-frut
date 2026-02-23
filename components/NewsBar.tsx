@@ -8,9 +8,9 @@ export default function NewsBar() {
   const items = [...anuncios, ...anuncios];
 
   return (
-    <div className="bg-frutal-mora text-white py-2 overflow-hidden border-b-2 border-frutal-uva/50">
+    <div className="bg-superfruty-yellow text-superfruty-black py-2 overflow-hidden border-b-2 border-superfruty-yellowDark">
       <div className="flex items-center gap-3 overflow-hidden">
-        <div className="flex-shrink-0 flex items-center gap-2 px-4 py-1 bg-frutal-uva/80 rounded-r-xl">
+        <div className="flex-shrink-0 flex items-center gap-2 px-4 py-1 bg-superfruty-black text-superfruty-yellow rounded-r-xl">
           <Megaphone className="w-5 h-5 animate-pulse" />
           <span className="font-bold text-sm whitespace-nowrap">Noticias del día</span>
         </div>

@@ -13,7 +13,7 @@ export default function AnimatedCard({
   children,
   delay = 0,
   className = '',
-  gradient = 'from-frutal-mango to-frutal-naranja',
+  gradient = 'from-superfruty-yellow to-frutal-naranja',
 }: AnimatedCardProps) {
   return (
     <motion.div

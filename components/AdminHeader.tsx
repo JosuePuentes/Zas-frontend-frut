@@ -22,25 +22,25 @@ export default function AdminHeader() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="relative p-2 rounded-xl hover:bg-frutal-mango/20 transition-colors"
+        className="relative p-2 rounded-xl hover:bg-superfruty-yellow/20 transition-colors"
         aria-label="Notificaciones"
       >
-        <Bell className="w-6 h-6 text-frutal-mora" />
+        <Bell className="w-6 h-6 text-superfruty-black" />
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-frutal-fresa text-white text-xs font-bold">
+          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-superfruty-yellow text-superfruty-black text-xs font-bold">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-80 max-h-96 bg-white rounded-2xl shadow-2xl border-2 border-frutal-mango/30 overflow-hidden z-50">
-          <div className="p-4 border-b-2 border-frutal-mango/20 flex items-center justify-between">
+        <div className="absolute right-0 top-full mt-2 w-80 max-h-96 bg-white rounded-2xl shadow-2xl border-2 border-superfruty-yellow/30 overflow-hidden z-50">
+          <div className="p-4 border-b-2 border-superfruty-yellow/20 flex items-center justify-between">
             <h3 className="font-bold text-gray-800">Notificaciones</h3>
             {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
-                className="text-sm text-frutal-mora font-medium hover:underline"
+                className="text-sm text-superfruty-yellow font-medium hover:underline"
               >
                 Marcar todas leídas
               </button>
@@ -58,7 +58,7 @@ export default function AdminHeader() {
                     markAsRead(n.id);
                     setOpen(false);
                   }}
-                  className={`block p-4 border-b border-gray-100 hover:bg-frutal-mango/10 transition-colors ${!n.leida ? 'bg-frutal-kiwi/5' : ''}`}
+                  className={`block p-4 border-b border-gray-100 hover:bg-superfruty-yellow/10 transition-colors ${!n.leida ? 'bg-superfruty-yellow/5' : ''}`}
                 >
                   <p className="font-medium text-gray-800">{n.mensaje}</p>
                   <p className="text-xs text-gray-500 mt-1">

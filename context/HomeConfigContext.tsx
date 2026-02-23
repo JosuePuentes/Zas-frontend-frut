@@ -15,7 +15,7 @@ const BANNERS_KEY = 'zas_banners';
 const PANELES_KEY = 'zas_paneles';
 
 const DEFAULT_ANUNCIOS = [
-  '¡Bienvenidos a Zas! Frut! Batidos frescos todos los días.',
+  '¡Bienvenidos a Super Fruty! Batidos frescos todos los días.',
   '🎉 2x1 en batidos de mango los martes',
   'Nuevos sabores: Maracuyá, Guanábana y Piña Colada',
   'Horario: Lunes a Sábado 8am - 8pm',

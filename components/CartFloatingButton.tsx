@@ -21,12 +21,12 @@ export default function CartFloatingButton() {
     <>
       <button
         onClick={() => setOpen(!open)}
-        className="fixed bottom-20 right-4 z-50 w-14 h-14 rounded-full bg-gradient-to-r from-frutal-fresa to-frutal-mora text-white shadow-xl flex items-center justify-center hover:scale-110 transition-transform"
+        className="fixed bottom-20 right-4 z-50 w-14 h-14 rounded-full bg-superfruty-yellow text-superfruty-black shadow-xl flex items-center justify-center hover:scale-110 transition-transform"
         aria-label="Ver carrito"
       >
         <ShoppingCart className="w-6 h-6" />
         {cart.length > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 flex items-center justify-center rounded-full bg-white text-frutal-mora text-xs font-bold">
+          <span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 flex items-center justify-center rounded-full bg-superfruty-black text-superfruty-yellow text-xs font-bold">
             {cart.reduce((s, i) => s + i.cantidad, 0)}
           </span>
         )}
@@ -38,9 +38,9 @@ export default function CartFloatingButton() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-36 right-4 z-50 w-80 max-h-[60vh] bg-white rounded-2xl shadow-2xl border-2 border-frutal-mango/30 overflow-hidden flex flex-col"
+            className="fixed bottom-36 right-4 z-50 w-80 max-h-[60vh] bg-white rounded-2xl shadow-2xl border-2 border-superfruty-yellow/30 overflow-hidden flex flex-col"
           >
-            <div className="p-4 border-b-2 border-frutal-mango/30 flex items-center justify-between">
+            <div className="p-4 border-b-2 border-superfruty-yellow/30 flex items-center justify-between">
               <h3 className="font-bold text-gray-800">Carrito</h3>
               <span className="text-sm text-frutal-mora font-medium">{cart.length} items</span>
             </div>
@@ -51,7 +51,7 @@ export default function CartFloatingButton() {
                 cart.map((item, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center justify-between p-2 rounded-xl bg-frutal-mango/10 border border-frutal-mango/20"
+                    className="flex items-center justify-between p-2 rounded-xl bg-superfruty-yellow/10 border border-superfruty-yellow/20"
                   >
                     <div className="min-w-0 flex-1">
                       <p className="font-medium text-gray-800 truncate">{item.nombre_batido}</p>
@@ -85,12 +85,12 @@ export default function CartFloatingButton() {
                 ))
               )}
             </div>
-            <div className="p-4 border-t-2 border-frutal-mango/30">
+            <div className="p-4 border-t-2 border-superfruty-yellow/30">
               <p className="text-lg font-bold text-gray-800 mb-2">Total: ${cartTotal.toFixed(2)}</p>
               <Link
                 href="/cliente/checkout"
                 onClick={() => setOpen(false)}
-                className="block w-full py-3 rounded-xl bg-gradient-to-r from-frutal-fresa to-frutal-mora text-white font-bold text-center"
+                className="block w-full py-3 rounded-xl bg-superfruty-yellow text-superfruty-black font-bold text-center"
               >
                 Ir a pagar
               </Link>

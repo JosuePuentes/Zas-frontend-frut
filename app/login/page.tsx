@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import { LogIn, ArrowLeft } from 'lucide-react';
@@ -40,7 +41,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-frutal-fresa via-frutal-mora to-frutal-uva flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-superfruty-black via-superfruty-black to-superfruty-yellow/20 flex items-center justify-center p-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -55,9 +56,12 @@ export default function LoginPage() {
         </Link>
 
         <div className="bg-white rounded-2xl shadow-2xl p-8">
-          <div className="flex items-center gap-2 mb-6">
-            <LogIn className="w-8 h-8 text-frutal-mora" />
-            <h1 className="text-2xl font-bold text-gray-800">Iniciar sesión</h1>
+          <div className="flex flex-col items-center mb-6">
+            <Image src="/logo-super-fruty.png" alt="Super Fruty" width={80} height={80} className="mb-4" />
+            <div className="flex items-center gap-2">
+              <LogIn className="w-8 h-8 text-superfruty-yellow" />
+              <h1 className="text-2xl font-bold text-gray-800">Iniciar sesión</h1>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -68,7 +72,7 @@ export default function LoginPage() {
                 onChange={(e) => setIdentificador(e.target.value)}
                 required
                 autoComplete="username"
-                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-frutal-mora focus:ring-2 focus:ring-frutal-mora/20 outline-none"
+                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-superfruty-yellow focus:ring-2 focus:ring-superfruty-yellow/20 outline-none"
                 placeholder="Ingresa aquí"
               />
             </div>
@@ -79,7 +83,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-frutal-mora focus:ring-2 focus:ring-frutal-mora/20 outline-none"
+                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-superfruty-yellow focus:ring-2 focus:ring-superfruty-yellow/20 outline-none"
               />
             </div>
             {error && (
@@ -88,7 +92,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-frutal-fresa to-frutal-mora text-white font-bold hover:shadow-lg disabled:opacity-70"
+              className="w-full py-3 rounded-xl bg-superfruty-yellow text-superfruty-black font-bold hover:shadow-lg disabled:opacity-70"
             >
               {loading ? 'Entrando...' : 'Entrar'}
             </button>
@@ -96,7 +100,7 @@ export default function LoginPage() {
 
           <p className="mt-6 text-center text-gray-600 text-sm">
             ¿No tienes cuenta?{' '}
-            <Link href="/registro" className="text-frutal-mora font-bold hover:underline">
+            <Link href="/registro" className="text-superfruty-yellow font-bold hover:underline">
               Regístrate
             </Link>
           </p>

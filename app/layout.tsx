@@ -8,8 +8,12 @@ import { CartProvider } from '@/context/CartContext';
 import { SucursalProvider } from '@/context/SucursalContext';
 
 export const metadata: Metadata = {
-  title: 'Zas! Frut - Tienda de Batidos',
-  description: 'Sistema de gestión para tienda de batidos',
+  title: 'Super Fruty - Tienda de Batidos',
+  description: 'Super Fruty - Batidos frescos, naturales y deliciosos',
+  icons: {
+    icon: '/logo-super-fruty.png',
+    apple: '/logo-super-fruty.png',
+  },
 };
 
 export default function RootLayout({

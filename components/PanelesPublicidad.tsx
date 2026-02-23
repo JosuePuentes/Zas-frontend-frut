@@ -18,7 +18,7 @@ export default function PanelesPublicidad() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.1 }}
           whileHover={{ scale: 1.03, y: -4 }}
-          className="rounded-2xl overflow-hidden shadow-xl border-4 border-white/30 bg-white"
+          className="rounded-2xl overflow-hidden shadow-xl border-4 border-superfruty-yellow/50 bg-white"
         >
           <div className="relative aspect-[4/3]">
             <Image

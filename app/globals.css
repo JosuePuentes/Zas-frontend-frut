@@ -15,6 +15,13 @@
   --coco: #5D4037;
 }
 
+html {
+  border: 3px solid #76B93F;
+  box-sizing: border-box;
+  min-height: 100%;
+}
+
 body {
   @apply min-h-screen;
+  box-sizing: border-box;
 }

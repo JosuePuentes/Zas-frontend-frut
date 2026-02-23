@@ -59,7 +59,7 @@ export default function MapaZulia() {
             <div className="p-2 min-w-[180px]">
               <p className="font-bold">{p.clienteNombre}</p>
               <p className="text-sm text-gray-600">{p.direccionEntrega || `${p.ubicacionEntrega!.lat.toFixed(4)}, ${p.ubicacionEntrega!.lng.toFixed(4)}`}</p>
-              <p className="text-sm text-frutal-mora font-medium mt-1">${p.total.toFixed(2)}</p>
+              <p className="text-sm text-superfruty-yellow font-medium mt-1">${p.total.toFixed(2)}</p>
               <a
                 href={`https://www.google.com/maps?q=${p.ubicacionEntrega!.lat},${p.ubicacionEntrega!.lng}`}
                 target="_blank"

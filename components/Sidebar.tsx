@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLayout } from '@/context/LayoutContext';
@@ -80,10 +81,10 @@ export default function Sidebar() {
     <>
       <button
         onClick={() => setMobileOpen(true)}
-        className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-white shadow-lg border-2 border-frutal-mango/50"
+        className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-white shadow-lg border-2 border-superfruty-yellow/50"
         aria-label="Abrir menú"
       >
-        <Menu className="w-6 h-6 text-frutal-mora" />
+        <Menu className="w-6 h-6 text-superfruty-black" />
       </button>
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 bg-black/50 z-40" onClick={() => setMobileOpen(false)} aria-hidden="true" />
@@ -91,37 +92,38 @@ export default function Sidebar() {
       <motion.aside
         initial={false}
         animate={{ width: collapsed ? 72 : 280 }}
-        className={`fixed left-0 top-0 z-40 h-screen bg-white shadow-xl border-r-2 border-frutal-mango/40 flex flex-col transition-transform md:translate-x-0 ${
+        className={`fixed left-0 top-0 z-40 h-screen bg-white shadow-xl border-r-2 border-superfruty-yellow/40 flex flex-col transition-transform md:translate-x-0 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >
-        <div className="p-4 flex items-center justify-between border-b-2 border-frutal-mango/30">
-          {!collapsed && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2">
-              <span className="text-2xl font-bold bg-gradient-to-r from-frutal-fresa to-frutal-mora bg-clip-text text-transparent">
-                Zas! Frut
-              </span>
-            </motion.div>
-          )}
+        <div className="p-4 flex items-center justify-between border-b-2 border-superfruty-yellow/30">
+          <div className="flex items-center gap-2 overflow-hidden">
+            <Image src="/logo-super-fruty.png" alt="Super Fruty" width={36} height={36} className="object-contain flex-shrink-0" />
+            {!collapsed && (
+              <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xl font-bold text-superfruty-black whitespace-nowrap">
+                Super Fruty
+              </motion.span>
+            )}
+          </div>
           <button
             onClick={() => setCollapsed(!collapsed)}
             aria-label={collapsed ? 'Expandir menú' : 'Colapsar menú'}
-            className="p-2 rounded-lg hover:bg-frutal-mango/30 transition-colors"
+            className="p-2 rounded-lg hover:bg-superfruty-yellow/30 transition-colors"
           >
-            <ChevronLeft className={`w-5 h-5 text-frutal-mora transition-transform ${collapsed ? 'rotate-180' : ''}`} />
+            <ChevronLeft className={`w-5 h-5 text-superfruty-black transition-transform ${collapsed ? 'rotate-180' : ''}`} />
           </button>
         </div>
 
         {!collapsed && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-3">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-frutal-mora" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-superfruty-black" />
               <input
                 type="text"
                 placeholder="Buscar módulos..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 rounded-lg border-2 border-frutal-mango/40 focus:ring-2 focus:ring-frutal-mora/30 focus:border-frutal-mora outline-none text-sm"
+                className="w-full pl-9 pr-3 py-2 rounded-lg border-2 border-superfruty-yellow/40 focus:ring-2 focus:ring-superfruty-yellow/30 focus:border-superfruty-yellow outline-none text-sm"
               />
             </div>
           </motion.div>
@@ -140,14 +142,14 @@ export default function Sidebar() {
                     href={mod.href}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all relative ${
                       isActive
-                        ? 'bg-gradient-to-r from-frutal-fresa to-frutal-mora text-white shadow-lg'
-                        : 'hover:bg-frutal-mango/30 text-gray-700'
+                        ? 'bg-superfruty-yellow text-superfruty-black shadow-lg'
+                        : 'hover:bg-superfruty-yellow/30 text-gray-700'
                     }`}
                   >
                     <span className="relative">
                       <Icon className="w-5 h-5 flex-shrink-0" />
                       {showBadge && (
-                        <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-frutal-fresa text-white text-[10px] font-bold">
+                        <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-superfruty-yellow text-superfruty-black text-[10px] font-bold">
                           {badgeCount > 99 ? '99+' : badgeCount}
                         </span>
                       )}
@@ -161,7 +163,7 @@ export default function Sidebar() {
         </nav>
 
         {!collapsed && user && (
-          <div className="p-3 border-t-2 border-frutal-mango/30">
+          <div className="p-3 border-t-2 border-superfruty-yellow/30">
             <p className="text-xs text-gray-500 truncate px-2">{user.email}</p>
             <button
               onClick={handleLogout}

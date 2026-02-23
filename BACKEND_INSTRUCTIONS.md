@@ -1,4 +1,4 @@
-# Instrucciones para el Backend - Zas! Frut
+# Instrucciones para el Backend - Super Fruty
 
 El frontend usa **localStorage** para usuarios, anuncios, banners y mensajes de soporte. Para producción, implementa estos endpoints en tu backend.
 
@@ -28,31 +28,24 @@ const userSchema = new Schema({
 
 ---
 
-## 2. Login diferenciado
+## 2. Login (detección automática)
 
 ### POST /auth/login
 
-**Body (admin):**
+**Body (único para todos):**
 ```json
 {
   "identificador": "admin",
-  "password": "password123",
-  "tipo": "admin"
+  "password": "password123"
 }
 ```
 
-**Body (cliente):**
-```json
-{
-  "identificador": "cliente@email.com",
-  "password": "password123",
-  "tipo": "cliente"
-}
-```
+El frontend envía un solo campo `identificador`. El backend determina el tipo:
+- Si `identificador` contiene **@** → buscar como **cliente** por `email`
+- Si no contiene **@** → buscar como **admin** por `usuario` (o email como fallback)
 
-- Si `tipo: "admin"` → buscar por `usuario` (o email como fallback)
-- Si `tipo: "cliente"` → buscar por `email`
-- Response: `{ user: {...}, token: "jwt..." }`
+Response: `{ user: {...}, token: "jwt..." }`  
+En error: `{ error: "Credenciales incorrectas" }` (mensaje genérico, sin mencionar usuario ni correo)
 
 ---
 
@@ -301,7 +294,7 @@ Listar pedidos. Query params: `estado`, `sucursalId`. Master ve todos; admin de 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
 | POST | /auth/register | Registro de clientes (ubicacion obligatoria) |
-| POST | /auth/login | Login (tipo: admin o cliente) |
+| POST | /auth/login | Login (detección: @ = cliente, sino admin) |
 | GET | /users | Listar usuarios |
 | POST | /users | Crear cliente o admin (desde área admin; sucursalId si admin) |
 | GET | /notifications | Notificaciones admin |
@@ -407,7 +400,7 @@ function sucursalMasCercana(latCliente, lngCliente, sucursales) {
 
 ## 10. Integración Frontend
 
-1. **AuthContext**: `POST /auth/login` con `identificador`, `password`, `tipo`. Registro público solo clientes (con `ubicacion` obligatoria).
+1. **AuthContext**: `POST /auth/login` con `identificador`, `password`. El backend detecta tipo por @ en identificador. Registro público solo clientes (con `ubicacion` obligatoria).
 2. **HomeConfigContext**: fetch a `/home/anuncios`, `/home/banners`, `/home/paneles`
 3. **SupportContext**: `POST /soporte` y `GET /admin/soporte`
 4. **SucursalContext**: `GET /sucursales`, `GET /admin/sucursales`, `POST /admin/sucursales` (con PIN)
@@ -423,7 +416,7 @@ function sucursalMasCercana(latCliente, lngCliente, sucursales) {
 |------|---------------|
 | **Home** | Quiénes somos, Contacto, ¿Por qué elegirnos? |
 | **Registro** | Cliente: activar ubicación obligatoria para delivery |
-| **Login** | Admin con usuario, cliente con correo |
+| **Login** | Un solo campo; detección automática: @ = cliente (correo), sino admin (usuario) |
 | **Área cliente** | Catálogo batidos, buscador, modal adicionales, carrito flotante |
 | **Checkout** | Delivery/recoger, ubicación, métodos pago (Zelle, Pago Móvil, Transferencia, Binance), referencia, banco, comprobante |
 | **Mis pedidos** | Lista con barra de estado (Pendiente→Verificado→Preparando→Envío→Entregado), hora estimada |
