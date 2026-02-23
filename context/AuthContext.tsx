@@ -87,12 +87,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let found: User | undefined;
     if (tipo === 'cliente') {
       found = users.find((u) => u.rol === 'cliente' && u.email.toLowerCase() === identificador.toLowerCase());
-      if (!found) return { ok: false, error: 'Cliente no encontrado. Usa tu correo electrónico.' };
-      if (found.rol !== 'cliente') return { ok: false, error: 'Acceso denegado' };
+      if (!found) return { ok: false, error: 'Credenciales incorrectas' };
     } else {
       found = users.find((u) => u.rol !== 'cliente' && (u.usuario?.toLowerCase() === identificador.toLowerCase() || u.email.toLowerCase() === identificador.toLowerCase()));
-      if (!found) return { ok: false, error: 'Usuario administrativo no encontrado. Usa tu nombre de usuario.' };
-      if (found.rol === 'cliente') return { ok: false, error: 'Los clientes deben usar el acceso con correo' };
+      if (!found) return { ok: false, error: 'Credenciales incorrectas' };
     }
     setUser(found);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(found));
