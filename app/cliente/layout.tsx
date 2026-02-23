@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import SupportButton from '@/components/SupportButton';
 import Link from 'next/link';
+import Image from 'next/image';
 import { LogOut, Coffee, ShoppingBag, MapPin } from 'lucide-react';
 import CartFloatingButton from '@/components/CartFloatingButton';
 
