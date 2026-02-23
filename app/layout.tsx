@@ -6,6 +6,7 @@ import { HomeConfigProvider } from '@/context/HomeConfigContext';
 import { SupportProvider } from '@/context/SupportContext';
 import { CartProvider } from '@/context/CartContext';
 import { SucursalProvider } from '@/context/SucursalContext';
+import { InventarioProvider } from '@/context/InventarioContext';
 
 export const metadata: Metadata = {
   title: 'Super Fruty - Tienda de Batidos',
@@ -29,9 +30,11 @@ export default function RootLayout({
             <HomeConfigProvider>
               <AuthProvider>
                 <SucursalProvider>
-                  <CartProvider>
-                    {children}
-                  </CartProvider>
+                  <InventarioProvider>
+                    <CartProvider>
+                      {children}
+                    </CartProvider>
+                  </InventarioProvider>
                 </SucursalProvider>
               </AuthProvider>
             </HomeConfigProvider>

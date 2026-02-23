@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '@/lib/api';
 import { useCart } from '@/context/CartContext';
 import { useHomeConfig } from '@/context/HomeConfigContext';
+import { useInventario } from '@/context/InventarioContext';
 import { Search, Plus, Loader2, Coffee } from 'lucide-react';
 import type { BatidoDisponible, MateriaPrima } from '@/lib/types';
 import type { CartItem, CartExtra } from '@/context/CartContext';
@@ -27,8 +28,21 @@ export default function ClientePage() {
   const [cantidad, setCantidad] = useState(1);
   const { addToCart } = useCart();
   const { banners } = useHomeConfig();
+  const { inventarioVenta } = useInventario();
 
   useEffect(() => {
+    if (inventarioVenta.length > 0) {
+      setBatidos(inventarioVenta.map((p) => ({
+        recipe_id: p.id,
+        nombre_batido: p.descripcion,
+        stock_dosis: p.cantidad,
+        producibles_con_materia_prima: p.cantidad,
+        total_disponible: p.cantidad,
+        precio_sugerido: p.precio,
+      })));
+      setLoading(false);
+      return;
+    }
     async function load() {
       try {
         const [b, m] = await Promise.all([
@@ -44,7 +58,7 @@ export default function ClientePage() {
       }
     }
     load();
-  }, []);
+  }, [inventarioVenta.length]);
 
   const filteredBatidos = batidos.filter((b) =>
     b.nombre_batido?.toLowerCase().includes(search.toLowerCase())
@@ -55,6 +69,7 @@ export default function ClientePage() {
   const tapa = desechables.find((d) => /tapa|lid/i.test(d.nombre));
   const pitillo = desechables.find((d) => /pitillo|straw|sorbeto/i.test(d.nombre));
   const extrasDisponibles = materiaPrima.filter((m) => !m.es_desechable);
+  const usaInventarioVenta = inventarioVenta.length > 0;
 
   const toggleExtra = (id: string, nombre: string, precio: number) => {
     const idx = extrasSeleccionados.findIndex((e) => e.id === id);
@@ -84,12 +99,14 @@ export default function ClientePage() {
 
   const addToCartFromModal = () => {
     if (!modalProducto) return;
-    const costoEnvase =
-      (vaso?.costo_por_unidad ?? 0) + (tapa?.costo_por_unidad ?? 0) + (pitillo?.costo_por_unidad ?? 0);
-    const envaseItems: { materia_prima_id: string; cantidad: number }[] = [];
-    if (vaso) envaseItems.push({ materia_prima_id: vaso._id, cantidad: 1 });
-    if (tapa) envaseItems.push({ materia_prima_id: tapa._id, cantidad: 1 });
-    if (pitillo) envaseItems.push({ materia_prima_id: pitillo._id, cantidad: 1 });
+    const costoEnvase = usaInventarioVenta ? 0 : (vaso?.costo_por_unidad ?? 0) + (tapa?.costo_por_unidad ?? 0) + (pitillo?.costo_por_unidad ?? 0);
+    const envaseItems: { materia_prima_id: string; cantidad: number }[] = usaInventarioVenta ? [] : (() => {
+      const items: { materia_prima_id: string; cantidad: number }[] = [];
+      if (vaso) items.push({ materia_prima_id: vaso._id, cantidad: 1 });
+      if (tapa) items.push({ materia_prima_id: tapa._id, cantidad: 1 });
+      if (pitillo) items.push({ materia_prima_id: pitillo._id, cantidad: 1 });
+      return items;
+    })();
 
     const extras: CartExtra[] = extrasSeleccionados.map((e) => ({
       materia_prima_id: e.id,

@@ -30,6 +30,7 @@ import {
   PackageCheck,
   Building2,
   Globe,
+  DollarSign,
 } from 'lucide-react';
 
 const MODULOS: { href: string; label: string; icon: any; permission: string; masterOnly?: boolean }[] = [
@@ -50,6 +51,9 @@ const MODULOS: { href: string; label: string; icon: any; permission: string; mas
   { href: '/admin/anuncios', label: 'Anuncios y Banners', icon: Megaphone, permission: 'anuncios' },
   { href: '/admin/usuarios', label: 'Usuarios y Clientes', icon: Users, permission: 'usuarios' },
   { href: '/admin/soporte', label: 'Mensajes Soporte', icon: MessageCircle, permission: 'usuarios' },
+  { href: '/admin/clientes-pos', label: 'Clientes POS', icon: Users, permission: 'usuarios' },
+  { href: '/admin/ventas-general', label: 'Ventas General', icon: BarChart3, permission: 'pos' },
+  { href: '/admin/gastos', label: 'Gastos', icon: DollarSign, permission: 'dashboard' },
 ];
 
 export default function Sidebar() {
