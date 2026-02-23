@@ -13,8 +13,10 @@ const userSchema = new Schema({
   password: { type: String, required: true }, // hash con bcrypt
   nombre: { type: String, required: true },
   telefono: { type: String, default: '' },
-  rol: { type: String, enum: ['cliente', 'admin', 'super_admin'], required: true },
+  rol: { type: String, enum: ['cliente', 'admin', 'super_admin', 'master'], required: true },
   permisos: [{ type: String }], // para admin
+  sucursalId: { type: ObjectId, ref: 'Sucursal' }, // admin/super_admin: sucursal asignada; master no tiene
+  ubicacion: { lat: Number, lng: Number, direccion: String }, // clientes: para delivery
   createdAt: { type: Date, default: Date.now }
 });
 ```
@@ -66,12 +68,13 @@ const userSchema = new Schema({
   "nombre": "Juan Pérez",
   "telefono": "+58 412 1234567",
   "rol": "cliente",
-  "usuario": "admin"  // Solo si rol es "admin"
+  "usuario": "admin",  // Solo si rol es "admin"
+  "ubicacion": { "lat": 10.64, "lng": -71.61, "direccion": "..." }  // Solo si rol es "cliente" (para delivery)
 }
 ```
 
-- Si `rol: "cliente"` → redirigir a `/cliente`
-- Si `rol: "admin"` → crear con `usuario`, redirigir a `/admin/dashboard`
+- Si `rol: "cliente"` → requiere `ubicacion` para poder hacer pedidos con delivery; redirigir a `/cliente`
+- Si `rol: "admin"` → crear con `usuario` y opcionalmente `sucursalId`; redirigir a `/admin/dashboard`
 
 ---
 
@@ -142,27 +145,85 @@ const supportMessageSchema = new Schema({
 
 ---
 
-## 6. Compras del Cliente
+## 6. Pedidos Online (área cliente)
 
-Para "Mis compras" en el área cliente, asociar cada venta con el `clienteId` cuando el cliente esté logueado.
+El cliente hace pedidos desde el catálogo, selecciona delivery o recoger, elige método de pago y envía comprobante.
 
-### Modificar POST /sales
+### Modelo Pedido
 
-**Body actual:**
-```json
-{
-  "items": [...],
-  "clienteId": "id_del_cliente"  // Añadir cuando el cliente hace un pedido
-}
+```javascript
+const orderSchema = new Schema({
+  clienteId: { type: ObjectId, ref: 'User', required: true },
+  clienteNombre: { type: String, required: true },
+  clienteEmail: { type: String, required: true },
+  clienteTelefono: { type: String },
+  items: [{
+    recipe_id: String,
+    nombre_batido: String,
+    cantidad: Number,
+    precio_unitario: Number,
+    extras: [{ materia_prima_id: String, nombre: String, cantidad: Number, precio_extra: Number }],
+    costo_envase: Number
+  }],
+  subtotal: Number,
+  delivery: Boolean,
+  montoDelivery: Number,
+  total: Number,
+  direccionEntrega: String,
+  ubicacionEntrega: { lat: Number, lng: Number },
+  sucursalId: { type: ObjectId, ref: 'Sucursal' },
+  metodoPago: { type: String, enum: ['zelle', 'pago_movil', 'transferencia', 'binance'] },
+  referenciaPago: String,
+  bancoEmisor: String,
+  comprobanteUrl: String,
+  estado: { type: String, enum: ['pendiente', 'verificado', 'preparacion', 'envio', 'entregado'], default: 'pendiente' },
+  horaEstimadaEntrega: String,
+  createdAt: { type: Date, default: Date.now }
+});
 ```
 
-### GET /cliente/compras
-
-Listar ventas donde `clienteId` coincide con el usuario logueado.
+### POST /pedidos (crear pedido online)
 
 **Headers:** `Authorization: Bearer <token>` (token de cliente)
 
-**Response:** `[{ id, fecha, total, items: [...] }]`
+**Body:**
+```json
+{
+  "items": [{ "recipe_id": "...", "nombre_batido": "...", "cantidad": 1, "precio_unitario": 5, "extras": [], "costo_envase": 0.5 }],
+  "subtotal": 10,
+  "delivery": true,
+  "montoDelivery": 2.5,
+  "total": 12.5,
+  "direccionEntrega": "Av. 5 de Julio",
+  "ubicacionEntrega": { "lat": 10.64, "lng": -71.61 },
+  "metodoPago": "zelle",
+  "referenciaPago": "123456",
+  "bancoEmisor": "Banco de Venezuela"
+}
+```
+
+- Asignar `sucursalId` automáticamente: sucursal más cercana a `ubicacionEntrega` (si delivery) o primera sucursal (si recoger).
+- Si no hay ubicación, `sucursalId` puede ser null; el admin master lo asigna manualmente después.
+
+### GET /cliente/pedidos
+
+Listar pedidos del cliente logueado.
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Response:** `[{ id, estado, total, items, horaEstimadaEntrega, createdAt, ... }]`
+
+### PATCH /admin/pedidos/:id/estado
+
+Cambiar estado: `verificado`, `preparacion`, `envio`, `entregado`. Al pasar a `envio`, opcional `horaEstimadaEntrega`.
+
+### PATCH /admin/pedidos/:id/sucursal
+
+Asignar sucursal (body: `{ sucursalId: "..." }`). Solo para pedidos sin sucursal.
+
+### GET /admin/pedidos
+
+Listar pedidos. Query params: `estado`, `sucursalId`. Master ve todos; admin de sucursal solo los de su `sucursalId`.
 
 ---
 
@@ -170,10 +231,10 @@ Listar ventas donde `clienteId` coincide con el usuario logueado.
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
-| POST | /auth/register | Registro (incluir usuario si rol admin) |
+| POST | /auth/register | Registro (usuario si admin, ubicacion si cliente) |
 | POST | /auth/login | Login (tipo: admin o cliente) |
 | GET | /users | Listar usuarios |
-| POST | /users | Crear usuario |
+| POST | /users | Crear usuario (sucursalId si admin) |
 | GET | /notifications | Notificaciones admin |
 | PATCH | /notifications/:id/read | Marcar leída |
 | GET | /home/anuncios | Anuncios barra superior |
@@ -185,7 +246,16 @@ Listar ventas donde `clienteId` coincide con el usuario logueado.
 | POST | /soporte | Mensaje de soporte (cliente) |
 | GET | /admin/soporte | Mensajes soporte |
 | PATCH | /admin/soporte/:id/read | Marcar leído |
-| GET | /cliente/compras | Compras del cliente |
+| POST | /pedidos | Crear pedido online (cliente) |
+| GET | /cliente/pedidos | Mis pedidos (cliente) |
+| GET | /admin/pedidos | Listar pedidos (filtro estado, sucursalId) |
+| PATCH | /admin/pedidos/:id/estado | Cambiar estado pedido |
+| PATCH | /admin/pedidos/:id/sucursal | Asignar sucursal a pedido |
+| GET | /sucursales | Listar sucursales activas (público) |
+| GET | /admin/sucursales | Listar todas (master) |
+| POST | /admin/sucursales | Crear sucursal (master + PIN) |
+| PUT | /admin/sucursales/:id | Actualizar sucursal |
+| GET | /admin/finanzas-global | Finanzas consolidadas (master) |
 
 ---
 
@@ -268,11 +338,31 @@ function sucursalMasCercana(latCliente, lngCliente, sucursales) {
 
 ## 10. Integración Frontend
 
-1. Reemplazar `AuthContext` login: llamar `POST /auth/login` con `identificador`, `password`, `tipo`
-2. Reemplazar `HomeConfigContext` por fetch a `/home/anuncios`, `/home/banners`, `/home/paneles`
-3. Reemplazar `SupportContext` por `POST /soporte` y `GET /admin/soporte`
-4. Reemplazar `SucursalContext` por fetch a `/sucursales` y `/admin/sucursales`
-5. En ventas POS: si hay cliente logueado, enviar `clienteId` en el body
-6. Área cliente: consumir `GET /cliente/compras` para "Mis compras"
-7. Pedidos: incluir `sucursalId` al crear; backend asigna por cercanía o admin asigna manualmente
-8. Usuarios admin: incluir `sucursalId` al crear (excepto master)
+1. **AuthContext**: `POST /auth/login` con `identificador`, `password`, `tipo`. Registro con `ubicacion` si cliente.
+2. **HomeConfigContext**: fetch a `/home/anuncios`, `/home/banners`, `/home/paneles`
+3. **SupportContext**: `POST /soporte` y `GET /admin/soporte`
+4. **SucursalContext**: `GET /sucursales`, `GET /admin/sucursales`, `POST /admin/sucursales` (con PIN)
+5. **CartContext**: `POST /pedidos` al crear orden; `GET /cliente/pedidos` para mis pedidos; `PATCH` para estado y sucursal
+6. **Ventas POS**: enviar `clienteId` si hay cliente logueado
+7. **Usuarios**: incluir `sucursalId` al crear admin (excepto master)
+
+---
+
+## 11. Resumen de cambios implementados en el frontend
+
+| Área | Funcionalidad |
+|------|---------------|
+| **Home** | Quiénes somos, Contacto, ¿Por qué elegirnos? |
+| **Registro** | Cliente: activar ubicación obligatoria para delivery |
+| **Login** | Admin con usuario, cliente con correo |
+| **Área cliente** | Catálogo batidos, buscador, modal adicionales, carrito flotante |
+| **Checkout** | Delivery/recoger, ubicación, métodos pago (Zelle, Pago Móvil, Transferencia, Binance), referencia, banco, comprobante |
+| **Mis pedidos** | Lista con barra de estado (Pendiente→Verificado→Preparando→Envío→Entregado), hora estimada |
+| **Sucursales (cliente)** | Mapa con puntos de venta, lista de sucursales |
+| **Admin pedidos** | Pendientes, asignar sucursal, verificar |
+| **Admin preparación** | Ver productos, adicionales, ubicación; marcar terminado |
+| **Admin envío** | Ubicación entrega, marcar entregado, mapa Zulia |
+| **Admin entregados** | Historial |
+| **Admin sucursales** | CRUD (master + PIN) |
+| **Admin finanzas global** | Total todas sucursales (master) |
+| **Admin usuarios** | Crear con sucursal asignada |
