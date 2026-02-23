@@ -312,7 +312,7 @@ function ModalProductoVenta({
             </div>
             {ingredientes.length > 0 && (
               <div className="mt-2 p-2 bg-gray-100 rounded-lg">
-                {ingredientes.map((i) => (
+                {ingredientes.map((i: IngredienteReceta) => (
                   <span key={i.materiaPrimaId} className="inline-block mr-2 mb-1 px-2 py-0.5 bg-superfruty-yellow/30 rounded text-sm">
                     {i.nombre}: {i.gramos}g
                   </span>
