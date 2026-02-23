@@ -12,8 +12,6 @@ export default function RegistroPage() {
   const [password, setPassword] = useState('');
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
-  const [rol, setRol] = useState<'cliente' | 'admin'>('cliente');
-  const [usuario, setUsuario] = useState('');
   const [ubicacionObtenida, setUbicacionObtenida] = useState<{ lat: number; lng: number; direccion?: string } | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -41,20 +39,16 @@ export default function RegistroPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    if (rol === 'cliente' && !ubicacionObtenida) {
+        setError('');
+    if (!ubicacionObtenida) {
       setError('Debes activar la ubicación para poder realizar pedidos con delivery');
       return;
     }
     setLoading(true);
-    const res = await register(email, password, nombre, telefono, rol, usuario, ubicacionObtenida || undefined);
+    const res = await register(email, password, nombre, telefono, 'cliente', undefined, ubicacionObtenida || undefined);
     setLoading(false);
     if (res.ok) {
-      if (rol === 'admin') {
-        router.push('/admin/dashboard');
-      } else {
-        router.push('/cliente');
-      }
+      router.push('/cliente');
     } else {
       setError(res.error || 'Error al registrarse');
     }
@@ -125,34 +119,7 @@ export default function RegistroPage() {
                 className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-frutal-kiwi focus:ring-2 focus:ring-frutal-kiwi/20 outline-none"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de cuenta</label>
-              <select
-                value={rol}
-                onChange={(e) => setRol(e.target.value as 'cliente' | 'admin')}
-                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-frutal-kiwi focus:ring-2 focus:ring-frutal-kiwi/20 outline-none"
-              >
-                <option value="cliente">Cliente</option>
-                <option value="admin">Administrador</option>
-              </select>
-              <p className="text-xs text-gray-500 mt-1">
-                {rol === 'cliente' ? 'Acceso como cliente de la tienda' : 'Acceso al área administrativa con usuario'}
-              </p>
-            </div>
-            {rol === 'admin' && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Usuario (para iniciar sesión)</label>
-                <input
-                  type="text"
-                  value={usuario}
-                  onChange={(e) => setUsuario(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-frutal-kiwi focus:ring-2 focus:ring-frutal-kiwi/20 outline-none"
-                  placeholder="admin"
-                />
-              </div>
-            )}
-            {rol === 'cliente' && (
-              <div className="p-4 rounded-xl bg-frutal-kiwi/10 border-2 border-frutal-kiwi/30">
+            <div className="p-4 rounded-xl bg-frutal-kiwi/10 border-2 border-frutal-kiwi/30">
                 <p className="text-sm text-gray-700 mb-2">
                   Para hacer pedidos con delivery necesitamos activar tu ubicación.
                 </p>
@@ -171,8 +138,7 @@ export default function RegistroPage() {
                     Activar ubicación
                   </button>
                 )}
-              </div>
-            )}
+            </div>
             {error && (
               <p className="text-red-600 text-sm font-medium">{error}</p>
             )}

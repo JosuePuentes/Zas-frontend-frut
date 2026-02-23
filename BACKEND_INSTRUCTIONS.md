@@ -56,9 +56,11 @@ const userSchema = new Schema({
 
 ---
 
-## 3. Registro
+## 3. Registro de clientes
 
 ### POST /auth/register
+
+**Solo para clientes.** La página pública de registro (/registro) únicamente crea cuentas de cliente. Los usuarios administrativos se crean desde el área admin (Usuarios y Clientes).
 
 **Body:**
 ```json
@@ -67,14 +69,58 @@ const userSchema = new Schema({
   "password": "password123",
   "nombre": "Juan Pérez",
   "telefono": "+58 412 1234567",
-  "rol": "cliente",
-  "usuario": "admin",  // Solo si rol es "admin"
-  "ubicacion": { "lat": 10.64, "lng": -71.61, "direccion": "..." }  // Solo si rol es "cliente" (para delivery)
+  "ubicacion": { "lat": 10.64, "lng": -71.61, "direccion": "..." }
 }
 ```
 
-- Si `rol: "cliente"` → requiere `ubicacion` para poder hacer pedidos con delivery; redirigir a `/cliente`
-- Si `rol: "admin"` → crear con `usuario` y opcionalmente `sucursalId`; redirigir a `/admin/dashboard`
+- `ubicacion` es **obligatorio** para poder hacer pedidos con delivery
+- Response: `{ user: {...}, token: "jwt..." }`
+- Redirigir a `/cliente` tras registro exitoso
+
+---
+
+## 3b. Crear usuarios (área administrativa)
+
+Los administradores crean tanto **clientes** como **usuarios administrativos** desde el módulo Usuarios y Clientes.
+
+### POST /users (protegido, solo admin)
+
+**Body (crear cliente):**
+```json
+{
+  "email": "cliente@ejemplo.com",
+  "password": "password123",
+  "nombre": "Juan Pérez",
+  "telefono": "+58 412 1234567",
+  "rol": "cliente",
+  "ubicacion": { "lat": 10.64, "lng": -71.61, "direccion": "..." }
+}
+```
+
+**Body (crear administrador):**
+```json
+{
+  "email": "admin@ejemplo.com",
+  "password": "password123",
+  "nombre": "María Admin",
+  "telefono": "+58 412 1234567",
+  "rol": "admin",
+  "usuario": "maria_admin",
+  "permisos": ["dashboard", "pos", "pedidos", "inventario-materia-prima", ...],
+  "sucursalId": "id_de_la_sucursal"
+}
+```
+
+**Body (crear master):**
+```json
+{
+  "rol": "master",
+  "usuario": "nuevo_master",
+  ...
+}
+```
+- El rol `master` no tiene `sucursalId`
+- Solo un master/super_admin puede crear otro master
 
 ---
 
@@ -231,10 +277,10 @@ Listar pedidos. Query params: `estado`, `sucursalId`. Master ve todos; admin de 
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
-| POST | /auth/register | Registro (usuario si admin, ubicacion si cliente) |
+| POST | /auth/register | Registro de clientes (ubicacion obligatoria) |
 | POST | /auth/login | Login (tipo: admin o cliente) |
 | GET | /users | Listar usuarios |
-| POST | /users | Crear usuario (sucursalId si admin) |
+| POST | /users | Crear cliente o admin (desde área admin; sucursalId si admin) |
 | GET | /notifications | Notificaciones admin |
 | PATCH | /notifications/:id/read | Marcar leída |
 | GET | /home/anuncios | Anuncios barra superior |
@@ -338,13 +384,13 @@ function sucursalMasCercana(latCliente, lngCliente, sucursales) {
 
 ## 10. Integración Frontend
 
-1. **AuthContext**: `POST /auth/login` con `identificador`, `password`, `tipo`. Registro con `ubicacion` si cliente.
+1. **AuthContext**: `POST /auth/login` con `identificador`, `password`, `tipo`. Registro público solo clientes (con `ubicacion` obligatoria).
 2. **HomeConfigContext**: fetch a `/home/anuncios`, `/home/banners`, `/home/paneles`
 3. **SupportContext**: `POST /soporte` y `GET /admin/soporte`
 4. **SucursalContext**: `GET /sucursales`, `GET /admin/sucursales`, `POST /admin/sucursales` (con PIN)
 5. **CartContext**: `POST /pedidos` al crear orden; `GET /cliente/pedidos` para mis pedidos; `PATCH` para estado y sucursal
 6. **Ventas POS**: enviar `clienteId` si hay cliente logueado
-7. **Usuarios**: incluir `sucursalId` al crear admin (excepto master)
+7. **Usuarios**: crear clientes y admins desde `/admin/usuarios`; incluir `sucursalId` al crear admin (excepto master)
 
 ---
 
