@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
+import { useSucursal } from '@/context/SucursalContext';
 import type { User, UserRole, ModulePermission } from '@/context/AuthContext';
 import { Users, UserCircle, Plus, Loader2, Phone, Mail } from 'lucide-react';
 
@@ -17,16 +18,21 @@ const MODULE_LABELS: Record<ModulePermission, string> = {
   alertas: 'Alertas',
   usuarios: 'Usuarios',
   anuncios: 'Anuncios y Banners',
+  pedidos: 'Pedidos',
+  sucursales: 'Sucursales',
+  'finanzas-global': 'Finanzas Global',
 };
 
 const ROL_LABELS: Record<UserRole, string> = {
   admin: 'Administrador',
   cliente: 'Cliente',
   super_admin: 'Super Admin',
+  master: 'Master',
 };
 
 export default function UsuariosPage() {
-  const { getUsers, createUser, hasPermission } = useAuth();
+  const { getUsers, createUser, hasPermission, isMaster } = useAuth();
+  const { sucursales } = useSucursal();
   const [users, setUsers] = useState<User[]>([]);
   const [tab, setTab] = useState<'clientes' | 'admins'>('clientes');
   const [showModal, setShowModal] = useState(false);
@@ -37,6 +43,7 @@ export default function UsuariosPage() {
   const [rol, setRol] = useState<UserRole>('admin');
   const [permisos, setPermisos] = useState<ModulePermission[]>(['dashboard', 'pos']);
   const [usuario, setUsuario] = useState('');
+  const [sucursalId, setSucursalId] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -57,7 +64,7 @@ export default function UsuariosPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
-    const res = await createUser(email, password, nombre, telefono, rol, permisos, usuario);
+    const res = await createUser(email, password, nombre, telefono, rol, permisos, usuario, sucursalId || undefined);
     setLoading(false);
     if (res.ok) {
       setShowModal(false);
@@ -252,8 +259,24 @@ export default function UsuariosPage() {
                   <option value="cliente">Cliente</option>
                   <option value="admin">Administrador</option>
                   <option value="super_admin">Super Admin</option>
+                  {isMaster() && <option value="master">Master</option>}
                 </select>
               </div>
+              {rol !== 'cliente' && rol !== 'master' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Sucursal</label>
+                  <select
+                    value={sucursalId}
+                    onChange={(e) => setSucursalId(e.target.value)}
+                    className="w-full px-4 py-2 rounded-xl border-2 border-gray-200 focus:border-frutal-mora outline-none"
+                  >
+                    <option value="">Seleccionar sucursal</option>
+                    {sucursales.filter((s) => s.activa).map((s) => (
+                      <option key={s.id} value={s.id}>{s.nombre}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
               {rol !== 'cliente' && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Usuario</label>

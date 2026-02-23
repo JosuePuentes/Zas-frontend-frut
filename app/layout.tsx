@@ -4,6 +4,8 @@ import { AuthProvider } from '@/context/AuthContext';
 import { NotificationsProvider } from '@/context/NotificationsContext';
 import { HomeConfigProvider } from '@/context/HomeConfigContext';
 import { SupportProvider } from '@/context/SupportContext';
+import { CartProvider } from '@/context/CartContext';
+import { SucursalProvider } from '@/context/SucursalContext';
 
 export const metadata: Metadata = {
   title: 'Zas! Frut - Tienda de Batidos',
@@ -22,7 +24,11 @@ export default function RootLayout({
           <SupportProvider>
             <HomeConfigProvider>
               <AuthProvider>
-                {children}
+                <SucursalProvider>
+                  <CartProvider>
+                    {children}
+                  </CartProvider>
+                </SucursalProvider>
               </AuthProvider>
             </HomeConfigProvider>
           </SupportProvider>

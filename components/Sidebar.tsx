@@ -23,11 +23,23 @@ import {
   LogOut,
   Megaphone,
   MessageCircle,
+  ClipboardCheck,
+  ChefHat,
+  Truck,
+  PackageCheck,
+  Building2,
+  Globe,
 } from 'lucide-react';
 
-const MODULOS: { href: string; label: string; icon: any; permission: string }[] = [
+const MODULOS: { href: string; label: string; icon: any; permission: string; masterOnly?: boolean }[] = [
+  { href: '/admin/sucursales', label: 'Sucursales', icon: Building2, permission: 'sucursales', masterOnly: true },
+  { href: '/admin/finanzas-global', label: 'Finanzas Global', icon: Globe, permission: 'finanzas-global', masterOnly: true },
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard, permission: 'dashboard' },
   { href: '/admin/pos', label: 'Punto de Venta', icon: ShoppingCart, permission: 'pos' },
+  { href: '/admin/pedidos', label: 'Pedidos en línea', icon: ClipboardCheck, permission: 'pedidos' },
+  { href: '/admin/preparacion', label: 'Preparación', icon: ChefHat, permission: 'pedidos' },
+  { href: '/admin/envio', label: 'Envío', icon: Truck, permission: 'pedidos' },
+  { href: '/admin/entregados', label: 'Pedidos entregados', icon: PackageCheck, permission: 'pedidos' },
   { href: '/admin/inventario-materia-prima', label: 'Inventario Materia Prima', icon: Package, permission: 'inventario-materia-prima' },
   { href: '/admin/inventario-preparacion', label: 'Inventario Preparación', icon: Utensils, permission: 'inventario-preparacion' },
   { href: '/admin/inventario-venta', label: 'Inventario de Venta', icon: BarChart3, permission: 'inventario-venta' },
@@ -45,7 +57,7 @@ export default function Sidebar() {
   const [search, setSearch] = useState('');
   const [mobileOpen, setMobileOpen] = useState(false);
   const { sidebarCollapsed: collapsed, setSidebarCollapsed: setCollapsed } = useLayout();
-  const { user, logout, hasPermission } = useAuth();
+  const { user, logout, hasPermission, isMaster } = useAuth();
   const { unreadCount } = useNotifications();
   const { unreadCount: supportUnread } = useSupport();
 
@@ -54,6 +66,7 @@ export default function Sidebar() {
   }, [pathname]);
 
   const filteredModulos = MODULOS.filter((m) => {
+    if (m.masterOnly && !isMaster()) return false;
     if (!hasPermission(m.permission as any)) return false;
     return m.label.toLowerCase().includes(search.toLowerCase());
   });

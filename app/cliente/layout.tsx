@@ -5,7 +5,8 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import SupportButton from '@/components/SupportButton';
 import Link from 'next/link';
-import { LogOut, Gift, ShoppingBag } from 'lucide-react';
+import { LogOut, Coffee, ShoppingBag, MapPin } from 'lucide-react';
+import CartFloatingButton from '@/components/CartFloatingButton';
 
 export default function ClienteLayout({
   children,
@@ -62,18 +63,26 @@ export default function ClienteLayout({
           href="/cliente"
           className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl ${pathname === '/cliente' ? 'bg-frutal-kiwi/20 text-frutal-kiwi' : 'text-gray-600'}`}
         >
-          <Gift className="w-6 h-6" />
-          <span className="text-xs font-medium">Promociones</span>
+          <Coffee className="w-6 h-6" />
+          <span className="text-xs font-medium">Catálogo</span>
         </Link>
         <Link
-          href="/cliente/compras"
-          className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl ${pathname === '/cliente/compras' ? 'bg-frutal-kiwi/20 text-frutal-kiwi' : 'text-gray-600'}`}
+          href="/cliente/pedidos"
+          className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl ${pathname === '/cliente/pedidos' ? 'bg-frutal-kiwi/20 text-frutal-kiwi' : 'text-gray-600'}`}
         >
           <ShoppingBag className="w-6 h-6" />
-          <span className="text-xs font-medium">Mis compras</span>
+          <span className="text-xs font-medium">Mis pedidos</span>
+        </Link>
+        <Link
+          href="/cliente/sucursales"
+          className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl ${pathname === '/cliente/sucursales' ? 'bg-frutal-kiwi/20 text-frutal-kiwi' : 'text-gray-600'}`}
+        >
+          <MapPin className="w-6 h-6" />
+          <span className="text-xs font-medium">Sucursales</span>
         </Link>
       </nav>
 
+      <CartFloatingButton />
       <SupportButton />
     </div>
   );

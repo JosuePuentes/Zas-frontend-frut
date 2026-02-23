@@ -196,10 +196,83 @@ Listar ventas donde `clienteId` coincide con el usuario logueado.
 
 ---
 
-## 9. Integración Frontend
+## 9. Sucursales (Multi-sucursal)
+
+### Modelo Sucursal
+
+```javascript
+const sucursalSchema = new Schema({
+  nombre: { type: String, required: true },
+  direccion: { type: String, required: true },
+  lat: { type: Number, required: true },
+  lng: { type: Number, required: true },
+  telefono: { type: String },
+  activa: { type: Boolean, default: true },
+  createdAt: { type: Date, default: Date.now }
+});
+```
+
+### Modelo Usuario (actualizado)
+
+Añadir a User:
+- `sucursalId: { type: ObjectId, ref: 'Sucursal' }` - Para admin/super_admin, indica a qué sucursal pertenecen
+- `rol: { enum: ['cliente', 'admin', 'super_admin', 'master'] }` - Nuevo rol `master`
+- `ubicacion: { lat, lng, direccion }` - Para clientes (geolocalización para delivery)
+
+El **usuario master** no tiene `sucursalId` y puede ver todas las sucursales, agregar sucursales (con PIN) y ver finanzas globales.
+
+### PIN de verificación para sucursales
+
+- Almacenar `masterPin` (hash) en configuración global
+- Solo el usuario master puede agregar sucursales
+- POST /admin/sucursales requiere header `X-Master-PIN` o body `{ pin: "1234", ...sucursal }`
+
+### Endpoints Sucursales
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | /sucursales | Listar sucursales activas (público para mapa cliente) |
+| GET | /admin/sucursales | Listar todas (solo master) |
+| POST | /admin/sucursales | Crear sucursal (solo master, requiere PIN) |
+| PUT | /admin/sucursales/:id | Actualizar sucursal |
+| PATCH | /admin/sucursales/:id/activa | Activar/desactivar |
+
+### Pedidos con sucursal
+
+- Cada pedido tiene `sucursalId` (asignado automáticamente por cercanía o manualmente por admin)
+- Al crear pedido online: calcular sucursal más cercana a `ubicacionEntrega` del cliente
+- GET /admin/pedidos?estado=pendiente&sucursalId=xxx - Filtrar por sucursal para admins no-master
+- Master ve todos los pedidos; admin de sucursal solo los de su sucursal
+
+### Inventario, ventas y finanzas por sucursal
+
+- Inventario materia prima, preparación, ventas: asociar a `sucursalId`
+- Cada sucursal tiene su propio inventario
+- GET /admin/finanzas-global - Solo master: suma de ventas/finanzas de todas las sucursales
+- GET /reports/utilidad?sucursalId=xxx - Finanzas de una sucursal
+
+### Algoritmo sucursal más cercana
+
+```javascript
+function sucursalMasCercana(latCliente, lngCliente, sucursales) {
+  let minDist = Infinity, nearest = null;
+  for (const s of sucursales) {
+    const d = haversine(latCliente, lngCliente, s.lat, s.lng);
+    if (d < minDist) { minDist = d; nearest = s; }
+  }
+  return nearest;
+}
+```
+
+---
+
+## 10. Integración Frontend
 
 1. Reemplazar `AuthContext` login: llamar `POST /auth/login` con `identificador`, `password`, `tipo`
 2. Reemplazar `HomeConfigContext` por fetch a `/home/anuncios`, `/home/banners`, `/home/paneles`
 3. Reemplazar `SupportContext` por `POST /soporte` y `GET /admin/soporte`
-4. En ventas POS: si hay cliente logueado, enviar `clienteId` en el body
-5. Área cliente: consumir `GET /cliente/compras` para "Mis compras"
+4. Reemplazar `SucursalContext` por fetch a `/sucursales` y `/admin/sucursales`
+5. En ventas POS: si hay cliente logueado, enviar `clienteId` en el body
+6. Área cliente: consumir `GET /cliente/compras` para "Mis compras"
+7. Pedidos: incluir `sucursalId` al crear; backend asigna por cercanía o admin asigna manualmente
+8. Usuarios admin: incluir `sucursalId` al crear (excepto master)

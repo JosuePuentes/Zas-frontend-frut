@@ -1,8 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { LogIn, UserPlus, User } from 'lucide-react';
+import { LogIn, UserPlus, User, Users, Mail, Sparkles, X } from 'lucide-react';
 import NewsBar from '@/components/NewsBar';
 import PromoBanners from '@/components/PromoBanners';
 import PanelesPublicidad from '@/components/PanelesPublicidad';
@@ -10,6 +11,8 @@ import { useAuth } from '@/context/AuthContext';
 
 export default function HomePage() {
   const { user } = useAuth();
+  const [modalQuienes, setModalQuienes] = useState(false);
+  const [modalContacto, setModalContacto] = useState(false);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-frutal-fresa via-frutal-mora to-frutal-uva">
@@ -78,8 +81,22 @@ export default function HomePage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center"
+          className="flex flex-wrap gap-4 justify-center mb-12"
         >
+          <button
+            onClick={() => setModalQuienes(true)}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/90 text-frutal-mora font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+          >
+            <Users className="w-5 h-5" />
+            Quiénes somos
+          </button>
+          <button
+            onClick={() => setModalContacto(true)}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/90 text-frutal-kiwi font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+          >
+            <Mail className="w-5 h-5" />
+            Contacto
+          </button>
           <Link
             href="/registro"
             className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-white text-frutal-fresa font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all"
@@ -88,7 +105,99 @@ export default function HomePage() {
             Registrarse
           </Link>
         </motion.div>
+
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="w-full max-w-4xl mt-8 p-6 rounded-2xl bg-white/20 backdrop-blur-sm border border-white/30"
+        >
+          <h2 className="text-xl font-bold text-white text-center mb-4 flex items-center justify-center gap-2">
+            <Sparkles className="w-6 h-6" />
+            ¿Por qué elegirnos?
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-white/95 text-center">
+            <div className="p-4 rounded-xl bg-white/10">
+              <p className="font-bold">Frescura garantizada</p>
+              <p className="text-sm mt-1">Ingredientes naturales y de primera calidad</p>
+            </div>
+            <div className="p-4 rounded-xl bg-white/10">
+              <p className="font-bold">Entrega a domicilio</p>
+              <p className="text-sm mt-1">Llevamos tus batidos hasta tu puerta en Zulia</p>
+            </div>
+            <div className="p-4 rounded-xl bg-white/10">
+              <p className="font-bold">Variedad de sabores</p>
+              <p className="text-sm mt-1">Múltiples combinaciones para todos los gustos</p>
+            </div>
+          </div>
+        </motion.section>
       </main>
+
+      {modalQuienes && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+          onClick={() => setModalQuienes(false)}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 relative"
+          >
+            <button onClick={() => setModalQuienes(false)} className="absolute top-4 right-4 p-1 rounded-lg hover:bg-gray-100">
+              <X className="w-5 h-5 text-gray-600" />
+            </button>
+            <h3 className="text-2xl font-bold text-frutal-mora mb-4">Quiénes somos</h3>
+            <p className="text-gray-700 leading-relaxed">
+              <strong>Zas! Frut</strong> es tu tienda de batidos de frutas frescas en el estado Zulia, Venezuela.
+              Nos dedicamos a preparar batidos naturales con ingredientes de calidad, sin conservantes artificiales.
+              Nuestra misión es llevar la frescura de las frutas a tu mesa, ya sea que nos visites o te llevemos
+              el pedido hasta tu hogar con nuestro servicio de delivery.
+            </p>
+            <p className="text-gray-600 mt-4 text-sm">
+              ¡Únete a nuestra comunidad y disfruta de los mejores batidos de la región!
+            </p>
+          </motion.div>
+        </motion.div>
+      )}
+
+      {modalContacto && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+          onClick={() => setModalContacto(false)}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 relative"
+          >
+            <button onClick={() => setModalContacto(false)} className="absolute top-4 right-4 p-1 rounded-lg hover:bg-gray-100">
+              <X className="w-5 h-5 text-gray-600" />
+            </button>
+            <h3 className="text-2xl font-bold text-frutal-kiwi mb-4">Contacto</h3>
+            <div className="space-y-3 text-gray-700">
+              <p className="flex items-center gap-2">
+                <Mail className="w-5 h-5 text-frutal-mora" />
+                <span>Email: contacto@zasfrut.com</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <span className="text-frutal-mora font-bold">Tel:</span>
+                <span>+58 412 123 4567</span>
+              </p>
+              <p className="text-sm text-gray-600 mt-4">
+                Estamos en el estado Zulia, Venezuela. Horario de atención: Lunes a Domingo.
+              </p>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 }

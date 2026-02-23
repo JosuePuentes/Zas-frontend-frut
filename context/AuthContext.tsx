@@ -2,8 +2,8 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-export type UserRole = 'admin' | 'cliente' | 'super_admin';
-export type ModulePermission = 'dashboard' | 'pos' | 'inventario-materia-prima' | 'inventario-preparacion' | 'inventario-venta' | 'produccion' | 'planificacion' | 'alertas' | 'usuarios' | 'anuncios';
+export type UserRole = 'admin' | 'cliente' | 'super_admin' | 'master';
+export type ModulePermission = 'dashboard' | 'pos' | 'inventario-materia-prima' | 'inventario-preparacion' | 'inventario-venta' | 'produccion' | 'planificacion' | 'alertas' | 'usuarios' | 'anuncios' | 'pedidos' | 'sucursales' | 'finanzas-global';
 
 export interface User {
   id: string;
@@ -13,6 +13,8 @@ export interface User {
   telefono?: string;
   rol: UserRole;
   permisos: ModulePermission[];
+  sucursalId?: string;
+  ubicacion?: { lat: number; lng: number; direccion?: string };
   createdAt?: string;
 }
 
@@ -29,7 +31,7 @@ function getStoredUser(): User | null {
   }
 }
 
-const ALL_PERMISSIONS: ModulePermission[] = ['dashboard', 'pos', 'inventario-materia-prima', 'inventario-preparacion', 'inventario-venta', 'produccion', 'planificacion', 'alertas', 'usuarios', 'anuncios'];
+const ALL_PERMISSIONS: ModulePermission[] = ['dashboard', 'pos', 'inventario-materia-prima', 'inventario-preparacion', 'inventario-venta', 'produccion', 'planificacion', 'alertas', 'usuarios', 'anuncios', 'pedidos', 'sucursales', 'finanzas-global'];
 
 function getStoredUsers(): User[] {
   if (typeof window === 'undefined') return [];
@@ -39,11 +41,11 @@ function getStoredUsers(): User[] {
     if (users.length === 0) {
       users = [{
         id: crypto.randomUUID(),
-        email: 'admin@zas.com',
-        usuario: 'admin',
-        nombre: 'Administrador',
+        email: 'master@zas.com',
+        usuario: 'master',
+        nombre: 'Usuario Master',
         telefono: '',
-        rol: 'super_admin' as UserRole,
+        rol: 'master' as UserRole,
         permisos: ALL_PERMISSIONS,
       }];
       saveUsers(users);
@@ -63,10 +65,12 @@ const AuthContext = createContext<{
   ready: boolean;
   login: (identificador: string, password: string, tipo: 'admin' | 'cliente') => Promise<{ ok: boolean; error?: string }>;
   logout: () => void;
-  register: (email: string, password: string, nombre: string, telefono: string, rol: 'cliente' | 'admin', usuario?: string) => Promise<{ ok: boolean; error?: string }>;
-  createUser: (email: string, password: string, nombre: string, telefono: string, rol: UserRole, permisos: ModulePermission[], usuario?: string) => Promise<{ ok: boolean; error?: string }>;
+  register: (email: string, password: string, nombre: string, telefono: string, rol: 'cliente' | 'admin', usuario?: string, ubicacion?: { lat: number; lng: number; direccion?: string }) => Promise<{ ok: boolean; error?: string }>;
+  createUser: (email: string, password: string, nombre: string, telefono: string, rol: UserRole, permisos: ModulePermission[], usuario?: string, sucursalId?: string) => Promise<{ ok: boolean; error?: string }>;
   getUsers: () => User[];
   hasPermission: (mod: ModulePermission) => boolean;
+  isMaster: () => boolean;
+  updateUserUbicacion: (ubicacion: { lat: number; lng: number; direccion?: string }) => void;
 }>(null as any);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -100,7 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(STORAGE_KEY);
   };
 
-  const register = async (email: string, password: string, nombre: string, telefono: string, rol: 'cliente' | 'admin', usuario?: string) => {
+  const register = async (email: string, password: string, nombre: string, telefono: string, rol: 'cliente' | 'admin', usuario?: string, ubicacion?: { lat: number; lng: number; direccion?: string }) => {
     const users = getStoredUsers();
     if (users.some((u) => u.email.toLowerCase() === email.toLowerCase()))
       return { ok: false, error: 'El email ya está registrado' };
@@ -113,7 +117,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       nombre,
       telefono: telefono || undefined,
       rol,
-      permisos: rol === 'admin' ? ['dashboard', 'pos', 'inventario-materia-prima', 'inventario-preparacion', 'inventario-venta', 'produccion', 'planificacion', 'alertas', 'anuncios'] : [],
+      permisos: rol === 'admin' ? ['dashboard', 'pos', 'pedidos', 'inventario-materia-prima', 'inventario-preparacion', 'inventario-venta', 'produccion', 'planificacion', 'alertas', 'anuncios'] : [],
+      ubicacion: rol === 'cliente' ? ubicacion : undefined,
       createdAt: new Date().toISOString(),
     };
     users.push(newUser);
@@ -130,7 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { ok: true };
   };
 
-  const createUser = async (email: string, password: string, nombre: string, telefono: string, rol: UserRole, permisos: ModulePermission[], usuario?: string) => {
+  const createUser = async (email: string, password: string, nombre: string, telefono: string, rol: UserRole, permisos: ModulePermission[], usuario?: string, sucursalId?: string) => {
     const users = getStoredUsers();
     if (users.some((u) => u.email.toLowerCase() === email.toLowerCase()))
       return { ok: false, error: 'El email ya está registrado' };
@@ -143,7 +148,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       nombre,
       telefono: telefono || undefined,
       rol,
-      permisos: rol === 'super_admin' ? ALL_PERMISSIONS : permisos,
+      permisos: rol === 'master' || rol === 'super_admin' ? ALL_PERMISSIONS : permisos,
+      sucursalId: rol !== 'master' && rol !== 'cliente' ? sucursalId : undefined,
       createdAt: new Date().toISOString(),
     };
     users.push(newUser);
@@ -156,14 +162,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const getUsers = () => getStoredUsers();
 
+  const updateUserUbicacion = (ubicacion: { lat: number; lng: number; direccion?: string }) => {
+    if (!user || user.rol !== 'cliente') return;
+    const users = getStoredUsers();
+    const updated = { ...user, ubicacion };
+    const idx = users.findIndex((u) => u.id === user.id);
+    if (idx >= 0) {
+      users[idx] = updated;
+      saveUsers(users);
+      setUser(updated);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    }
+  };
+
   const hasPermission = (mod: ModulePermission) => {
     if (!user) return false;
-    if (user.rol === 'super_admin') return true;
+    if (user.rol === 'master' || user.rol === 'super_admin') return true;
     return user.permisos.includes(mod);
   };
 
+  const isMaster = () => user?.rol === 'master' || user?.rol === 'super_admin';
+
   return (
-    <AuthContext.Provider value={{ user, ready, login, logout, register, createUser, getUsers, hasPermission }}>
+    <AuthContext.Provider value={{ user, ready, login, logout, register, createUser, getUsers, hasPermission, isMaster, updateUserUbicacion }}>
       {children}
     </AuthContext.Provider>
   );
