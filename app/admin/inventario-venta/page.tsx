@@ -37,30 +37,22 @@ export default function InventarioVentaPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <motion.h1
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        className="text-3xl font-bold text-gray-800"
-      >
+    <div className="space-y-6 bg-gray-50 min-h-full rounded-2xl p-6">
+      <motion.h1 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="text-3xl font-bold text-gray-800">
         Inventario de Venta
       </motion.h1>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-6"
-      >
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="rounded-2xl bg-gradient-to-br from-frutal-fresa to-frutal-sandia p-6 shadow-xl text-white">
-          <p className="text-white/90 text-sm">Ventas Totales</p>
+          <p className="text-white/95 text-sm">Ventas Totales</p>
           <p className="text-2xl font-bold">${(utilidad?.ventas_totales ?? 0).toFixed(2)}</p>
         </div>
         <div className="rounded-2xl bg-gradient-to-br from-frutal-kiwi to-frutal-limon p-6 shadow-xl text-white">
-          <p className="text-white/90 text-sm">Unidades Vendidas</p>
+          <p className="text-white/95 text-sm">Unidades Vendidas</p>
           <p className="text-2xl font-bold">{utilidad?.cantidad_vendida ?? 0}</p>
         </div>
         <div className="rounded-2xl bg-gradient-to-br from-frutal-mora to-frutal-uva p-6 shadow-xl text-white">
-          <p className="text-white/90 text-sm">Utilidad</p>
+          <p className="text-white/95 text-sm">Utilidad</p>
           <p className="text-2xl font-bold">${(utilidad?.utilidad ?? 0).toFixed(2)}</p>
         </div>
       </motion.div>
@@ -79,27 +71,19 @@ export default function InventarioVentaPage() {
               className={`rounded-2xl bg-gradient-to-br ${FRUTAL_COLORS[i % FRUTAL_COLORS.length]} p-6 shadow-xl text-white`}
             >
               <div className="flex items-start justify-between">
-                <BarChart3 className="w-10 h-10 opacity-80" />
-                <span className="px-2 py-0.5 rounded-full bg-white/30 text-xs font-bold">
-                  #{i + 1}
-                </span>
+                <BarChart3 className="w-10 h-10 opacity-90" />
+                <span className="px-2 py-0.5 rounded-full bg-white/30 text-xs font-bold">#{i + 1}</span>
               </div>
               <h3 className="font-bold text-lg mt-2">{item.nombre_batido}</h3>
-              <p className="text-white/90 text-sm mt-1">
-                Vendidos: {item.cantidad_vendida ?? 0}
-              </p>
+              <p className="text-white/95 text-sm mt-1">Vendidos: {item.cantidad_vendida ?? 0}</p>
             </motion.div>
           ))}
         </AnimatePresence>
       </div>
 
       {masVendidos.length === 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center py-16 text-gray-500"
-        >
-          <BarChart3 className="w-16 h-16 mx-auto mb-4 text-frutal-fresa/50" />
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16 text-gray-500">
+          <BarChart3 className="w-16 h-16 mx-auto mb-4 text-frutal-fresa" />
           <p>No hay datos de ventas aún</p>
         </motion.div>
       )}

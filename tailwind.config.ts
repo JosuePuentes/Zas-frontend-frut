@@ -10,16 +10,16 @@ const config: Config = {
     extend: {
       colors: {
         frutal: {
-          mango: '#FFB347',
-          fresa: '#FF6B6B',
-          mora: '#9B59B6',
-          kiwi: '#7CB342',
-          banana: '#FFE135',
-          naranja: '#FF8C42',
-          uva: '#6B2D5C',
-          sandia: '#FC6C85',
-          limon: '#C5E17A',
-          coco: '#8D6E63',
+          mango: '#E89500',
+          fresa: '#E53935',
+          mora: '#7B1FA2',
+          kiwi: '#558B2F',
+          banana: '#F9A825',
+          naranja: '#E65100',
+          uva: '#4A148C',
+          sandia: '#E91E63',
+          limon: '#8BC34A',
+          coco: '#5D4037',
         },
       },
       animation: {

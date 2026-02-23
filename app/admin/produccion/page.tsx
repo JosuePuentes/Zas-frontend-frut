@@ -12,11 +12,7 @@ export default function ProduccionPage() {
   const [dosis, setDosis] = useState<Record<string, number>>({});
 
   useEffect(() => {
-    api
-      .getRecipes()
-      .then((d) => setRecetas(Array.isArray(d) ? d : []))
-      .catch(() => setRecetas([]))
-      .finally(() => setLoading(false));
+    api.getRecipes().then((d) => setRecetas(Array.isArray(d) ? d : [])).catch(() => setRecetas([])).finally(() => setLoading(false));
   }, []);
 
   const procesar = async (recipeId: string) => {
@@ -43,12 +39,8 @@ export default function ProduccionPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <motion.h1
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        className="text-3xl font-bold text-gray-800"
-      >
+    <div className="space-y-6 bg-gray-50 min-h-full rounded-2xl p-6">
+      <motion.h1 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="text-3xl font-bold text-gray-800">
         Producción
       </motion.h1>
 
@@ -59,7 +51,7 @@ export default function ProduccionPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
-            className="bg-white rounded-2xl shadow-xl border border-frutal-mango/20 p-6"
+            className="bg-white rounded-2xl shadow-xl border-2 border-frutal-mango/30 p-6"
           >
             <div className="flex items-center gap-3 mb-4">
               <Package className="w-10 h-10 text-frutal-kiwi" />
@@ -72,7 +64,7 @@ export default function ProduccionPage() {
                 min={1}
                 value={dosis[r._id] ?? 1}
                 onChange={(e) => setDosis((p) => ({ ...p, [r._id]: parseInt(e.target.value) || 1 }))}
-                className="w-20 px-3 py-2 rounded-lg border border-frutal-mango/30 focus:ring-2 focus:ring-frutal-mora/30"
+                className="w-20 px-3 py-2 rounded-lg border-2 border-frutal-mango/40 focus:ring-2 focus:ring-frutal-mora outline-none"
               />
               <span className="text-sm text-gray-600">dosis</span>
               <button
@@ -80,11 +72,7 @@ export default function ProduccionPage() {
                 disabled={!!procesando}
                 className="ml-auto px-4 py-2 rounded-xl bg-gradient-to-r from-frutal-kiwi to-frutal-limon text-white font-bold hover:shadow-lg disabled:opacity-50 flex items-center gap-2"
               >
-                {procesando === r._id ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Check className="w-4 h-4" />
-                )}
+                {procesando === r._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                 Procesar
               </button>
             </div>
@@ -93,12 +81,8 @@ export default function ProduccionPage() {
       </div>
 
       {recetas.length === 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center py-16 text-gray-500"
-        >
-          <Package className="w-16 h-16 mx-auto mb-4 text-frutal-kiwi/50" />
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16 text-gray-500">
+          <Package className="w-16 h-16 mx-auto mb-4 text-frutal-kiwi" />
           <p>No hay recetas configuradas</p>
         </motion.div>
       )}

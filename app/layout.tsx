@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import Sidebar from '@/components/Sidebar';
-import { LayoutProvider } from '@/context/LayoutContext';
-import MainContent from '@/components/MainContent';
+import { AuthProvider } from '@/context/AuthContext';
+import { NotificationsProvider } from '@/context/NotificationsContext';
 
 export const metadata: Metadata = {
   title: 'Zas! Frut - Tienda de Batidos',
@@ -17,10 +16,11 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
-        <LayoutProvider>
-          <Sidebar />
-          <MainContent>{children}</MainContent>
-        </LayoutProvider>
+        <NotificationsProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </NotificationsProvider>
       </body>
     </html>
   );

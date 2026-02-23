@@ -146,17 +146,17 @@ export default function POSPage() {
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        className="flex-1 overflow-hidden flex flex-col bg-white rounded-2xl shadow-xl border border-frutal-mango/20"
+        className="flex-1 overflow-hidden flex flex-col bg-white rounded-2xl shadow-xl border-2 border-frutal-mango/30"
       >
-        <div className="p-4 border-b border-frutal-mango/20">
+        <div className="p-4 border-b-2 border-frutal-mango/30">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-frutal-mora/60" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-frutal-mora" />
             <input
               type="text"
               placeholder="Buscar batidos..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 rounded-xl border border-frutal-mango/30 focus:ring-2 focus:ring-frutal-mora/30 outline-none"
+              className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-frutal-mango/40 focus:ring-2 focus:ring-frutal-mora focus:border-frutal-mora outline-none"
             />
           </div>
         </div>
@@ -172,11 +172,11 @@ export default function POSPage() {
                 transition={{ delay: i * 0.03 }}
                 onClick={() => setModalBatido(b)}
                 disabled={b.total_disponible <= 0}
-                className="p-4 rounded-xl bg-gradient-to-br from-frutal-kiwi/20 to-frutal-limon/20 border border-frutal-kiwi/30 hover:from-frutal-kiwi/30 hover:to-frutal-limon/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-left"
+                className="p-4 rounded-xl bg-gradient-to-br from-frutal-kiwi/30 to-frutal-limon/30 border-2 border-frutal-kiwi/50 hover:from-frutal-kiwi/50 hover:to-frutal-limon/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-left"
               >
                 <p className="font-semibold text-gray-800 truncate">{b.nombre_batido}</p>
                 <p className="text-sm text-frutal-mora font-medium">${b.precio_sugerido?.toFixed(2)}</p>
-                <p className="text-xs text-gray-500">Disponible: {b.total_disponible}</p>
+                <p className="text-xs text-gray-600">Disponible: {b.total_disponible}</p>
               </motion.button>
             ))}
           </AnimatePresence>
@@ -186,9 +186,9 @@ export default function POSPage() {
       <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
-        className="w-full lg:w-96 flex flex-col bg-white rounded-2xl shadow-xl border border-frutal-mango/20 overflow-hidden"
+        className="w-full lg:w-96 flex flex-col bg-white rounded-2xl shadow-xl border-2 border-frutal-mango/30 overflow-hidden"
       >
-        <div className="p-4 border-b border-frutal-mango/20 flex items-center gap-2">
+        <div className="p-4 border-b-2 border-frutal-mango/30 flex items-center gap-2">
           <ShoppingCart className="w-6 h-6 text-frutal-mora" />
           <h2 className="font-bold text-gray-800">Carrito</h2>
         </div>
@@ -201,7 +201,7 @@ export default function POSPage() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="flex items-center justify-between p-3 rounded-xl bg-frutal-mango/10 border border-frutal-mango/20"
+                className="flex items-center justify-between p-3 rounded-xl bg-frutal-mango/20 border-2 border-frutal-mango/30"
               >
                 <div>
                   <p className="font-medium text-gray-800">{item.nombre_batido}</p>
@@ -211,23 +211,14 @@ export default function POSPage() {
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => updateCantidad(idx, -1)}
-                    className="p-1 rounded-lg bg-frutal-fresa/20 text-frutal-fresa hover:bg-frutal-fresa/30"
-                  >
+                  <button onClick={() => updateCantidad(idx, -1)} className="p-1 rounded-lg bg-frutal-fresa/30 text-frutal-fresa hover:bg-frutal-fresa/50">
                     <Minus className="w-4 h-4" />
                   </button>
                   <span className="font-bold w-6 text-center">{item.cantidad}</span>
-                  <button
-                    onClick={() => updateCantidad(idx, 1)}
-                    className="p-1 rounded-lg bg-frutal-kiwi/20 text-frutal-kiwi hover:bg-frutal-kiwi/30"
-                  >
+                  <button onClick={() => updateCantidad(idx, 1)} className="p-1 rounded-lg bg-frutal-kiwi/30 text-frutal-kiwi hover:bg-frutal-kiwi/50">
                     <Plus className="w-4 h-4" />
                   </button>
-                  <button
-                    onClick={() => updateCantidad(idx, -item.cantidad)}
-                    className="p-1 rounded-lg text-red-500 hover:bg-red-100"
-                  >
+                  <button onClick={() => updateCantidad(idx, -item.cantidad)} className="p-1 rounded-lg text-red-600 hover:bg-red-100">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -235,7 +226,7 @@ export default function POSPage() {
             ))}
           </AnimatePresence>
         </div>
-        <div className="p-4 border-t border-frutal-mango/20 space-y-3">
+        <div className="p-4 border-t-2 border-frutal-mango/30 space-y-3">
           <p className="text-xl font-bold text-gray-800">Total: ${total.toFixed(2)}</p>
           <button
             onClick={cerrarVenta}
@@ -262,7 +253,7 @@ export default function POSPage() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6"
+              className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border-2 border-frutal-mora/30"
             >
               <h3 className="text-xl font-bold text-gray-800 mb-2">{modalBatido.nombre_batido}</h3>
               <p className="text-frutal-mora font-medium mb-4">${modalBatido.precio_sugerido?.toFixed(2)}</p>
@@ -272,32 +263,26 @@ export default function POSPage() {
                   <button
                     key={m._id}
                     onClick={() => toggleExtra(m._id, m.nombre, m.costo_por_unidad)}
-                    className="px-3 py-1.5 rounded-lg bg-frutal-mango/20 text-gray-700 hover:bg-frutal-mango/30 text-sm"
+                    className="px-3 py-1.5 rounded-lg bg-frutal-mango/30 text-gray-800 hover:bg-frutal-mango/50 text-sm font-medium"
                   >
                     {m.nombre} +${m.costo_por_unidad?.toFixed(2)}
                   </button>
                 ))}
               </div>
               {extrasSeleccionados.length > 0 && (
-                <div className="mb-4 p-2 bg-frutal-kiwi/10 rounded-lg">
+                <div className="mb-4 p-2 bg-frutal-kiwi/20 rounded-lg border border-frutal-kiwi/40">
                   {extrasSeleccionados.map((e) => (
-                    <span key={e.id} className="inline-block mr-2 mb-1 px-2 py-0.5 bg-frutal-kiwi/30 rounded text-sm">
+                    <span key={e.id} className="inline-block mr-2 mb-1 px-2 py-0.5 bg-frutal-kiwi/40 rounded text-sm font-medium">
                       {e.nombre} x{e.cantidad}
                     </span>
                   ))}
                 </div>
               )}
               <div className="flex gap-3">
-                <button
-                  onClick={() => setModalBatido(null)}
-                  className="flex-1 py-2 rounded-xl border border-gray-300 text-gray-700"
-                >
+                <button onClick={() => setModalBatido(null)} className="flex-1 py-2 rounded-xl border-2 border-gray-300 text-gray-700 font-medium">
                   Cancelar
                 </button>
-                <button
-                  onClick={addToCart}
-                  className="flex-1 py-2 rounded-xl bg-gradient-to-r from-frutal-fresa to-frutal-mora text-white font-bold"
-                >
+                <button onClick={addToCart} className="flex-1 py-2 rounded-xl bg-gradient-to-r from-frutal-fresa to-frutal-mora text-white font-bold">
                   Añadir al carrito
                 </button>
               </div>
