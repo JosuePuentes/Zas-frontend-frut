@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --mango: #FFB347;
+  --fresa: #FF6B6B;
+  --mora: #9B59B6;
+  --kiwi: #7CB342;
+  --banana: #FFE135;
+  --naranja: #FF8C42;
+  --uva: #6B2D5C;
+  --sandia: #FC6C85;
+  --limon: #C5E17A;
+  --coco: #8D6E63;
+}
+
+body {
+  @apply bg-gradient-to-br from-frutal-limon/20 via-white to-frutal-mango/20 min-h-screen;
+}
